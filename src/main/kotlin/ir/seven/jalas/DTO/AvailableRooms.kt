@@ -1,5 +1,5 @@
 package ir.seven.jalas.DTO
 
 data class AvailableRooms(
-        val rooms: List<String>
+        val availableRooms: List<Int>
 )

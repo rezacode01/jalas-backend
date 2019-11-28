@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import java.util.*
 
 @FeignClient(
+        name = "reserve-system",
         url = "http://213.233.176.40",
         configuration = [ReservationConfiguration::class]
 )
@@ -15,7 +16,7 @@ interface ReservationClient {
 
     @GetMapping("/available_rooms")
     fun getAllAvailableRooms(
-            @RequestParam(required = true) startDate: Date,
-            @RequestParam(required = true) endDate: Date
+            @RequestParam(required = true) start: String,
+            @RequestParam(required = true) end: String
     ): AvailableRooms
 }

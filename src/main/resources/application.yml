@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: seven-jalas
+#  datasource:
+#    url: jdbc:postgresql://127.0.0.1:5432/metrix
+#    username: test
+#    password: test
+#  jpa:
+#    properties:
+#      hibernate:
+#        temp:
+#          use_jdbc_metadata_defaults: false
+#    generate-ddl: false
+#    hibernate:
+#      ddl-auto: validate
+#    open-in-view: false
+#  main:
+#    allow-bean-definition-overriding: true
+
+#metrix:
+#  domain: dashboard.metrix.ir
+#  mail:
+#    host: "mail.metrix.ir"
+#    tls: true
+#    username: "no-reply@metrix.ir"
+#    password: "Ls^JJcOFMcJC"
+#    address: "no-reply@metrix.ir"
+#  max_number_of_app_event_types: 30
+#  max_number_of_app_trackers: 50
+#  bot_token: "706130087:AAGmvSn8QvqpgxZWAKPyXLs1xDQVwO8fgKk"
+#  metrix_information_channel_chat_id: "-1001459723037"
+#  demo_organization_id: "aldcksjhmqtj"
+#
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 600000
+#  threadpool:
+#    default:
+#      coreSize: 300
+#      maxQueueSize: 500
+#      queueSizeRejectionThreshold: 500
+#
+#ribbon:
+#  MaxAutoRetries: 0
+#  MaxAutoRetriesNextServer: 0
+#  ConnectTimeout: 40000
+#  ReadTimeout: 600000
+#
+#  development: false
