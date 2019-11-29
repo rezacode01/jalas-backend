@@ -1,9 +1,6 @@
 package ir.seven.jalas.entities
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 import javax.validation.constraints.Email
 
 @Entity
@@ -35,6 +32,9 @@ class User (
             name = "password",
             nullable = false
     )
-    val password: String = ""
+    val password: String = "",
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    var choices: MutableList<UserChoice> = mutableListOf()
 
 )

@@ -1,10 +1,12 @@
 CREATE TABLE IF NOT EXISTS slots
 (
-    slotId  character varying(255) UNIQUE NOT NULL ,
-    startTime    TIMESTAMP              NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    endTime TIMESTAMP               NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    slot_id  character varying(255) UNIQUE NOT NULL ,
+--     mid      character varying(255)        NOT NULL ,
+    start_time    TIMESTAMP              NOT NULL,
+    end_time      TIMESTAMP              NOT NULL,
 
-    PRIMARY KEY (slotId)
+    PRIMARY KEY (slot_id)
+--     FOREIGN KEY (mid) REFERENCES meetings(mid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS meetings
@@ -12,23 +14,23 @@ CREATE TABLE IF NOT EXISTS meetings
     mid      character varying(255) UNIQUE NOT NULL,
     title    character varying(255)        NOT NULL,
     creator  character varying(255)        NOT NULL,
-    roomId   INTEGER                           NULL,
-    slotId   character varying(255)            NULL,
+    room_id  INTEGER                           NULL,
+    slot_id   character varying(255)            NULL,
     state    INTEGER                       NOT NULL ,
 
     PRIMARY KEY (mid),
     FOREIGN KEY (creator) REFERENCES j_user(user_id),
-    FOREIGN KEY (slotId) REFERENCES slots(slotId)
+    FOREIGN KEY (slot_id) REFERENCES slots(slot_id)
 );
 
 CREATE TABLE IF NOT EXISTS user_choices
 (
     id  character varying(255)  UNIQUE NOT NULL ,
-    userId  character varying(255)     NOT NULL ,
-    slotId  character varying(255)     NOT NULL ,
+    user_id  character varying(255)     NOT NULL ,
+    slot_id  character varying(255)     NOT NULL ,
     state   INTEGER                    NOT NULL ,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (userId) REFERENCES j_user(user_id) ON DELETE CASCADE ,
-    FOREIGN KEY (slotId) REFERENCES slots(slotId) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES j_user(user_id) ON DELETE CASCADE ,
+    FOREIGN KEY (slot_id) REFERENCES slots(slot_id) ON DELETE CASCADE
 )
