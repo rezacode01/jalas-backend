@@ -12,7 +12,7 @@ class UserChoice(
             name = "id",
             nullable = false
     )
-    var id: String,
+    var id: String = "",
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

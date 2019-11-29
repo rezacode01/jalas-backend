@@ -1,5 +1,8 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.UserChoiceState
+import org.hibernate.annotations.LazyCollection
+import org.hibernate.annotations.LazyCollectionOption
 import java.util.*
 import javax.persistence.*
 
@@ -29,6 +32,7 @@ class Slot(
         )
         var endDate: Date = Date(),
 
-        @OneToMany(mappedBy = "slot", fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "slot")
+        @LazyCollection(LazyCollectionOption.FALSE)
         var usersChoices: MutableList<UserChoice> = mutableListOf()
 )
