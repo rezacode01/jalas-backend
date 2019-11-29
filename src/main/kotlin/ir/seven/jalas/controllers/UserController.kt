@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/users ")
+//@RequestMapping("/users ")
 class UserController {
 
     @Autowired
     private lateinit var userService: UserService
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     fun getUserById(
             @PathVariable userId: String
     ) : UserInfo {
