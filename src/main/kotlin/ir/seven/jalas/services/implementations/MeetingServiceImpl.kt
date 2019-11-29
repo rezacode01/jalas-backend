@@ -4,6 +4,7 @@ import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.services.MeetingService
@@ -34,6 +35,19 @@ class MeetingServiceImpl : MeetingService {
 
         val savedMeeting = meetingRepo.save(meeting)
         return MeetingInfo(savedMeeting)
+    }
+
+    override fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo {
+        val meeting = getMeetingByIdAndHandleException(meetingId)
+
+        if (meeting.slotId == null)
+            throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
+
+        meeting.roomId = roomId
+        meeting.state = MeetingStatus.ROOM_SUBMITTED
+
+        val savedObject = meetingRepo.save(meeting)
+        return MeetingInfo(savedObject)
     }
 
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {

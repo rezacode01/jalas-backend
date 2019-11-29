@@ -53,4 +53,12 @@ class MeetingController {
     ): MeetingInfo {
         return meetingService.chooseSlot(meetingId, slotId)
     }
+
+    @PostMapping("/{meetingId}/rooms/{roomId}")
+    fun chooseRoom(
+            @PathVariable meetingId: String,
+            @PathVariable roomId: Int
+    ): MeetingInfo {
+        return meetingService.chooseRoom(meetingId, roomId)
+    }
 }
