@@ -45,4 +45,12 @@ class MeetingController {
     ): MeetingInfo {
         return meetingService.getMeetingById(meetingId)
     }
+
+    @PostMapping("/{meetingId}/slots/{slotId}")
+    fun chooseSlot(
+            @PathVariable meetingId: String,
+            @PathVariable slotId: String
+    ): MeetingInfo {
+        return meetingService.chooseSlot(meetingId, slotId)
+    }
 }
