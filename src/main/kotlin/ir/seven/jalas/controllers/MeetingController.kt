@@ -3,6 +3,7 @@ package ir.seven.jalas.controllers
 import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
+import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -19,6 +20,9 @@ class MeetingController {
 
     @Autowired
     private lateinit var reservationClient: ReservationClient
+
+    @Autowired
+    private lateinit var meetingService: MeetingService
 
     @GetMapping("/available_rooms")
     fun getAvailableRooms(
@@ -39,6 +43,6 @@ class MeetingController {
     fun getMeetingById(
             @PathVariable meetingId: String
     ): MeetingInfo {
-        TODO()
+        return meetingService.getMeetingById(meetingId)
     }
 }
