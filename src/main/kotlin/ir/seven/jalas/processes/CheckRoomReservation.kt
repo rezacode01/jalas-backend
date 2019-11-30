@@ -7,6 +7,7 @@ import ir.seven.jalas.services.MeetingService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -40,11 +41,16 @@ class CheckRoomReservation {
                             )
                         )
 
-                    logger.info(response.message)
+                    logger.info(response.body?.message)
                     logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
+
                 } catch (exp: Exception) {
+                    if (exp.message?.contains("400") == true) {
+                        logger.error("There is no empty room")
+
+                        meetingService.changeMeetingStats(meeting.id, MeetingStatus.PENDING)
+                    }
                     logger.error("-> Failed to reserve room ${meeting.room} for meeting ${meeting.id}")
-                    logger.error(exp.printStackTrace().toString())
                 }
             }
         }

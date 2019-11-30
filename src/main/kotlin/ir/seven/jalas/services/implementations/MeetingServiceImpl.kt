@@ -8,11 +8,14 @@ import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
+import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.Exception
 import java.text.SimpleDateFormat
 
 @Service
@@ -26,6 +29,8 @@ class MeetingServiceImpl : MeetingService {
 
     @Autowired
     private lateinit var reservationClient: ReservationClient
+
+    val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
     override fun getMeetingById(meetingId: String): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
@@ -55,7 +60,12 @@ class MeetingServiceImpl : MeetingService {
             val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
             val from = SimpleDateFormat(dateFormat).format(slot.startDate)
             val to = SimpleDateFormat(dateFormat).format(slot.endDate)
-            return reservationClient.getAllAvailableRooms(from, to)
+            try {
+                return reservationClient.getAllAvailableRooms(from, to)
+            } catch (exp: Exception) {
+                logger.error(exp.message)
+                throw InternalServerError("Reservation system error not responding")
+            }
         }
         throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
     }
@@ -71,6 +81,13 @@ class MeetingServiceImpl : MeetingService {
 
         val savedObject = meetingRepo.save(meeting)
         return MeetingInfo(savedObject)
+    }
+
+    override fun changeMeetingStats(meetingId: String, status: MeetingStatus) {
+        val meeting = getMeetingByIdAndHandleException(meetingId)
+
+        meeting.state = status
+        meetingRepo.save(meeting)
     }
 
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {

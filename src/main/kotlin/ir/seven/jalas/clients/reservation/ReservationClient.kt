@@ -5,8 +5,8 @@ import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.ReserveInfo
 import ir.seven.jalas.DTO.ReserveRoomResponse
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @FeignClient(
         name = "reserve-system",
@@ -25,5 +25,5 @@ interface ReservationClient {
     fun reserveRoom(
             @PathVariable roomId: Int,
             @RequestBody reserveInfo: ReserveInfo
-    ): ReserveRoomResponse
+    ): ResponseEntity<ReserveRoomResponse>
 }
