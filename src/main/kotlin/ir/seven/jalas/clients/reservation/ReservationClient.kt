@@ -2,9 +2,10 @@ package ir.seven.jalas.clients.reservation
 
 import ir.seven.jalas.clients.reservation.configuration.ReservationConfiguration
 import ir.seven.jalas.DTO.AvailableRooms
+import ir.seven.jalas.DTO.ReserveInfo
+import ir.seven.jalas.DTO.ReserveRoomResponse
 import org.springframework.cloud.openfeign.FeignClient
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @FeignClient(
@@ -19,4 +20,10 @@ interface ReservationClient {
             @RequestParam(required = true) start: String,
             @RequestParam(required = true) end: String
     ): AvailableRooms
+
+    @PostMapping("rooms/{roomId}/reserve")
+    fun reserveRoom(
+            @PathVariable roomId: Int,
+            @RequestBody reserveInfo: ReserveInfo
+    ): ReserveRoomResponse
 }

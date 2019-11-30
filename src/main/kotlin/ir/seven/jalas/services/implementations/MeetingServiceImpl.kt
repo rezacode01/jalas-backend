@@ -32,6 +32,10 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(meeting)
     }
 
+    override fun getAllMeetings(): List<MeetingInfo> {
+        return meetingRepo.findAll().map { MeetingInfo(it) }
+    }
+
     override fun chooseSlot(meetingId: String, slotId: String): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
         val slot = slotService.getSlotObjectById(slotId)

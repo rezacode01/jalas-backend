@@ -16,8 +16,8 @@ data class MeetingInfo(
             meeting.mid,
             meeting.title,
             UserInfo(meeting.creator),
-            meeting.slots.map { SlotInfo.toSlotInfo(it, mapOf()) },
-            if (meeting.slotId != null) SlotInfo.toSlotInfo(meeting.slotId!!, mapOf<String, Int>()) else null,
+            meeting.slots.map { SlotInfo.toSlotInfo(it) },
+            if (meeting.slotId != null) SlotInfo.toSlotInfo(meeting.slotId!!) else null,
             meeting.roomId,
             meeting.state
 
