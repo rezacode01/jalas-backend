@@ -1,6 +1,8 @@
 package ir.seven.jalas.services.implementations
 
+import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.MeetingInfo
+import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
@@ -11,6 +13,7 @@ import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
 
 @Service
 class MeetingServiceImpl : MeetingService {
@@ -20,6 +23,9 @@ class MeetingServiceImpl : MeetingService {
 
     @Autowired
     private lateinit var slotService: SlotService
+
+    @Autowired
+    private lateinit var reservationClient: ReservationClient
 
     override fun getMeetingById(meetingId: String): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
@@ -35,6 +41,19 @@ class MeetingServiceImpl : MeetingService {
 
         val savedMeeting = meetingRepo.save(meeting)
         return MeetingInfo(savedMeeting)
+    }
+
+    override fun getAvailableRooms(meetingId: String): AvailableRooms {
+        val meeting = getMeetingByIdAndHandleException(meetingId)
+        if (meeting.state >= MeetingStatus.TIME_SUBMITTED && meeting.slotId != null) {
+            val slot = meeting.slotId!!
+
+            val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
+            val from = SimpleDateFormat(dateFormat).format(slot.startDate)
+            val to = SimpleDateFormat(dateFormat).format(slot.endDate)
+            return reservationClient.getAllAvailableRooms(from, to)
+        }
+        throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
     }
 
     override fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo {

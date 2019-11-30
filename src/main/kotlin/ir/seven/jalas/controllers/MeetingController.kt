@@ -19,24 +19,13 @@ import java.util.*
 class MeetingController {
 
     @Autowired
-    private lateinit var reservationClient: ReservationClient
-
-    @Autowired
     private lateinit var meetingService: MeetingService
 
-    @GetMapping("/available_rooms")
+    @GetMapping("/{meetingId}/available_rooms")
     fun getAvailableRooms(
-            @RequestParam(required = true) start: String,
-            @RequestParam(required = true) end: String
+            @PathVariable meetingId: String
     ): AvailableRooms {
-        val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
-        val startDate: Date = SimpleDateFormat(dateFormat).parse(start)
-        val endDate: Date = SimpleDateFormat(dateFormat).parse(end)
-
-        if (startDate.after(endDate))
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-
-        return reservationClient.getAllAvailableRooms(start, end)
+        return meetingService.getAvailableRooms(meetingId)
     }
 
     @GetMapping("/{meetingId}")
