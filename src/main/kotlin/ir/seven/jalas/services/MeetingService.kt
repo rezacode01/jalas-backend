@@ -10,5 +10,5 @@ interface MeetingService {
     fun chooseSlot(meetingId: String, slotId: String): MeetingInfo
     fun getAvailableRooms(meetingId: String): AvailableRooms
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
-    fun changeMeetingStats(meetingId: String, status: MeetingStatus)
+    fun changeMeetingStats(meetingId: String, status: MeetingStatus): MeetingInfo
 }

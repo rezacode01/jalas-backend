@@ -3,6 +3,7 @@ package ir.seven.jalas.controllers
 import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
+import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -49,5 +50,13 @@ class MeetingController {
             @PathVariable roomId: Int
     ): MeetingInfo {
         return meetingService.chooseRoom(meetingId, roomId)
+    }
+
+    @PostMapping("/{meetingId}/status")
+    fun changeMeetingStatus(
+            @PathVariable meetingId: String,
+            @RequestParam status: MeetingStatus
+    ) : MeetingInfo {
+        return meetingService.changeMeetingStats(meetingId, status)
     }
 }

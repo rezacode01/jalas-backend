@@ -83,11 +83,13 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(savedObject)
     }
 
-    override fun changeMeetingStats(meetingId: String, status: MeetingStatus) {
+    override fun changeMeetingStats(meetingId: String, status: MeetingStatus) : MeetingInfo{
         val meeting = getMeetingByIdAndHandleException(meetingId)
 
         meeting.state = status
-        meetingRepo.save(meeting)
+        val savedObject = meetingRepo.save(meeting)
+
+        return MeetingInfo(savedObject)
     }
 
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {
