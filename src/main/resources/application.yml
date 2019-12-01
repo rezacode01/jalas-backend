@@ -23,39 +23,13 @@ spring:
     enabled: true
     baseline-on-migrate: true
     table: schema_version
-
-
-#metrix:
-#  domain: dashboard.metrix.ir
-#  mail:
-#    host: "mail.metrix.ir"
-#    tls: true
-#    username: "no-reply@metrix.ir"
-#    password: "Ls^JJcOFMcJC"
-#    address: "no-reply@metrix.ir"
-#  max_number_of_app_event_types: 30
-#  max_number_of_app_trackers: 50
-#  bot_token: "706130087:AAGmvSn8QvqpgxZWAKPyXLs1xDQVwO8fgKk"
-#  metrix_information_channel_chat_id: "-1001459723037"
-#  demo_organization_id: "aldcksjhmqtj"
-#
-#hystrix:
-#  command:
-#    default:
-#      execution:
-#        isolation:
-#          thread:
-#            timeoutInMilliseconds: 600000
-#  threadpool:
-#    default:
-#      coreSize: 300
-#      maxQueueSize: 500
-#      queueSizeRejectionThreshold: 500
-#
-#ribbon:
-#  MaxAutoRetries: 0
-#  MaxAutoRetriesNextServer: 0
-#  ConnectTimeout: 40000
-#  ReadTimeout: 600000
-#
-#  development: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jalas.seven@gmail.com
+    password: jalas7jalas
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true

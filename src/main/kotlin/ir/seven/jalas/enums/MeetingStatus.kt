@@ -5,5 +5,6 @@ enum class MeetingStatus {
     TIME_SUBMITTED,
     ROOM_SUBMITTED,
     FINALIZED,
-    RESERVED
+    RESERVED,
+    CANCELLED
 }

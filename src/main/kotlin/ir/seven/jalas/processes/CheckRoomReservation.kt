@@ -3,6 +3,7 @@ package ir.seven.jalas.processes
 import ir.seven.jalas.DTO.ReserveInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,9 +22,12 @@ class CheckRoomReservation {
     @Autowired
     private lateinit var reservationClient: ReservationClient
 
+    @Autowired
+    private lateinit var emailService: EmailService
+
     val logger = LoggerFactory.getLogger(CheckRoomReservation::class.java)
 
-    // delay is set to 5s due to test -- Of course it's not feasible in production
+    // delay is set to 5s due to test -- Of course it's not feasible in production!
     @Scheduled(fixedDelay = 5000)
     fun reserveRoomForSubmittedMeetings() {
 
@@ -41,9 +45,11 @@ class CheckRoomReservation {
                             )
                         )
 
-                    logger.info(response.body?.message)
-                    logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
+                    // also we can check response status code
+                    meetingService.changeMeetingStats(meeting.id, MeetingStatus.RESERVED)
+                    emailService.sendMeetingReservedRoomEmail(meeting.id)
 
+                    logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
                 } catch (exp: Exception) {
                     if (exp.message?.contains("400") == true) {
                         logger.error("There is no empty room")
