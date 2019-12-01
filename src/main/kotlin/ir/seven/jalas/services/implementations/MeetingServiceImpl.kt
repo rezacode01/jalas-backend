@@ -92,6 +92,11 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(savedObject)
     }
 
+    override fun getTotalReservedRoomsCount(): Int {
+        val meetings = meetingRepo.findAll()
+        return meetings.filter { it.state == MeetingStatus.RESERVED }.size
+    }
+
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {
         val meeting = meetingRepo.findById(meetingId)
         if (meeting.isPresent)
