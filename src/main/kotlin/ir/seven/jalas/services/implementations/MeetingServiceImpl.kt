@@ -86,6 +86,9 @@ class MeetingServiceImpl : MeetingService {
     override fun changeMeetingStats(meetingId: String, status: MeetingStatus) : MeetingInfo{
         val meeting = getMeetingByIdAndHandleException(meetingId)
 
+        if (meeting.state == MeetingStatus.CANCELLED)
+            throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
+
         meeting.state = status
         val savedObject = meetingRepo.save(meeting)
 
