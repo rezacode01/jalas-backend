@@ -28,7 +28,7 @@ class CheckRoomReservation {
     val logger = LoggerFactory.getLogger(CheckRoomReservation::class.java)
 
     // delay is set to 5s due to test -- Of course it's not feasible in production!
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 60000)
     fun reserveRoomForSubmittedMeetings() {
 
         logger.info("Start checking room reservation process")

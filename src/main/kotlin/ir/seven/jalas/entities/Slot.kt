@@ -1,6 +1,5 @@
 package ir.seven.jalas.entities
 
-import ir.seven.jalas.enums.UserChoiceState
 import org.hibernate.annotations.LazyCollection
 import org.hibernate.annotations.LazyCollectionOption
 import java.util.*

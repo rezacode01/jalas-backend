@@ -1,6 +1,7 @@
 package ir.seven.jalas.controllers
 
 import ir.seven.jalas.DTO.AvailableRooms
+import ir.seven.jalas.DTO.CreateMeetingRequest
 import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
@@ -21,6 +22,14 @@ class MeetingController {
 
     @Autowired
     private lateinit var meetingService: MeetingService
+
+    @PostMapping
+    fun createMeeting(
+            @RequestParam userId: String,
+            @RequestBody request: CreateMeetingRequest
+    ): MeetingInfo {
+        return meetingService.createMeeting(userId, request)
+    }
 
     @GetMapping("/{meetingId}/available_rooms")
     fun getAvailableRooms(

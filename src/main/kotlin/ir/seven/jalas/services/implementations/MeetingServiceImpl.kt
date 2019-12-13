@@ -1,22 +1,28 @@
 package ir.seven.jalas.services.implementations
 
 import ir.seven.jalas.DTO.AvailableRooms
+import ir.seven.jalas.DTO.CreateMeetingRequest
 import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
+import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
+import ir.seven.jalas.repositories.UserRepo
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
+import net.bytebuddy.utility.RandomString
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.Exception
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 
 @Service
 class MeetingServiceImpl : MeetingService {
@@ -30,7 +36,37 @@ class MeetingServiceImpl : MeetingService {
     @Autowired
     private lateinit var reservationClient: ReservationClient
 
+    @Autowired
+    private lateinit var userRepo: UserRepo
+
     val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
+
+    override fun createMeeting(userId: String, request: CreateMeetingRequest): MeetingInfo {
+        val user = userRepo.findById(userId)
+        if (!user.isPresent)
+            throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+
+        val meeting = Meeting(
+                mid = RandomString.make(10),
+                title = request.title,
+                creator = user.get()
+        )
+
+        val slots = request.slots.map {
+            Slot(
+                    slotId = RandomString.make(10),
+                    meeting = meeting,
+                    startDate = Date.from(Instant.ofEpochSecond(it.from)),
+                    endDate = Date.from(Instant.ofEpochSecond(it.to))
+            )
+        }.toMutableList()
+
+        meeting.slots = slots
+
+        val meetingObject = meetingRepo.save(meeting)
+
+        return MeetingInfo(meetingObject)
+    }
 
     override fun getMeetingById(meetingId: String): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
