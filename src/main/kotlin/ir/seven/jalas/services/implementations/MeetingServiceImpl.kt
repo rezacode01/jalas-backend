@@ -13,18 +13,22 @@ import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.repositories.UserRepo
+import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
 import net.bytebuddy.utility.RandomString
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 
 @Service
+@Transactional
 class MeetingServiceImpl : MeetingService {
 
     @Autowired
@@ -38,6 +42,9 @@ class MeetingServiceImpl : MeetingService {
 
     @Autowired
     private lateinit var userRepo: UserRepo
+
+    @Autowired
+    private lateinit var emailService: EmailService
 
     val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
@@ -64,6 +71,12 @@ class MeetingServiceImpl : MeetingService {
         meeting.slots = slots
 
         val meetingObject = meetingRepo.save(meeting)
+
+        logger.info("Create meeting ${meeting.mid}")
+
+        request.participants.forEach {
+            emailService.sendMeetingInvitationEmail(meetingObject, it)
+        }
 
         return MeetingInfo(meetingObject)
     }

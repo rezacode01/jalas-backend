@@ -33,3 +33,6 @@ spring:
         smtp:
           auth: true
           starttls.enable: true
+
+jalas:
+  base-url: localhost:${server.port}
