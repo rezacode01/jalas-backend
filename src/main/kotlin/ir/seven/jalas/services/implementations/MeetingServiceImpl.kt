@@ -3,11 +3,14 @@ package ir.seven.jalas.services.implementations
 import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.CreateMeetingRequest
 import ir.seven.jalas.DTO.MeetingInfo
+import ir.seven.jalas.DTO.VoteMeetingRequest
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.entities.Slot
+import ir.seven.jalas.entities.UserChoice
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
@@ -16,6 +19,7 @@ import ir.seven.jalas.repositories.UserRepo
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
+import ir.seven.jalas.services.UserService
 import net.bytebuddy.utility.RandomString
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +45,7 @@ class MeetingServiceImpl : MeetingService {
     private lateinit var reservationClient: ReservationClient
 
     @Autowired
-    private lateinit var userRepo: UserRepo
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var emailService: EmailService
@@ -49,14 +53,12 @@ class MeetingServiceImpl : MeetingService {
     val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
     override fun createMeeting(userId: String, request: CreateMeetingRequest): MeetingInfo {
-        val user = userRepo.findById(userId)
-        if (!user.isPresent)
-            throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+        val user = userService.getUserOBjectById(userId)
 
         val meeting = Meeting(
                 mid = RandomString.make(10),
                 title = request.title,
-                creator = user.get()
+                creator = user
         )
 
         val slots = request.slots.map {
@@ -99,6 +101,34 @@ class MeetingServiceImpl : MeetingService {
 
         val savedMeeting = meetingRepo.save(meeting)
         return MeetingInfo(savedMeeting)
+    }
+
+    override fun voteSlot(meetingId: String, slotId: String, request: VoteMeetingRequest): MeetingInfo {
+        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val slot = slotService.getSlotObjectById(slotId)
+        val user = userService.getOrCreateUser(request.username)
+
+        val meetingSlot = meeting.slots.find { it.slotId == slotId } ?:
+                throw EntityDoesNotExist(ErrorMessage.SLOT_DOES_NOT_EXIST)
+        val slotChoice = meetingSlot.usersChoices.find {
+            it.slot.slotId == slotId && it.user.userId == user.userId
+        }
+
+        if (slotChoice == null)
+            meetingSlot.usersChoices.add(
+                UserChoice(
+                        id = RandomString.make(6),
+                        user = user,
+                        slot = slot,
+                        state = request.vote
+                )
+        ) else {
+            slotChoice.state = request.vote
+        }
+
+        val savedObject = meetingRepo.save(meeting)
+
+        return MeetingInfo(savedObject)
     }
 
     override fun getAvailableRooms(meetingId: String): AvailableRooms {

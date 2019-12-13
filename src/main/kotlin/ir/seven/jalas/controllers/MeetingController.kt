@@ -3,8 +3,10 @@ package ir.seven.jalas.controllers
 import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.CreateMeetingRequest
 import ir.seven.jalas.DTO.MeetingInfo
+import ir.seven.jalas.DTO.VoteMeetingRequest
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -51,6 +53,15 @@ class MeetingController {
             @PathVariable slotId: String
     ): MeetingInfo {
         return meetingService.chooseSlot(meetingId, slotId)
+    }
+
+    @PostMapping("/{meetingId}/slots/{slotId}/vote")
+    fun voteForSlot(
+            @PathVariable meetingId: String,
+            @PathVariable slotId: String,
+            @RequestBody request: VoteMeetingRequest
+    ): MeetingInfo {
+        return meetingService.voteSlot(meetingId, slotId, request)
     }
 
     @PostMapping("/{meetingId}/rooms/{roomId}")

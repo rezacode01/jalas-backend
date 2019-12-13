@@ -31,7 +31,7 @@ class Slot(
         )
         var endDate: Date = Date(),
 
-        @OneToMany(mappedBy = "slot")
+        @OneToMany(mappedBy = "slot", cascade = [CascadeType.ALL])
         @LazyCollection(LazyCollectionOption.FALSE)
         var usersChoices: MutableList<UserChoice> = mutableListOf()
 )
