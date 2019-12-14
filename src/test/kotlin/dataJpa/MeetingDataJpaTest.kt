@@ -4,6 +4,7 @@ import ir.seven.jalas.JalasApplication
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.entities.User
 import ir.seven.jalas.repositories.MeetingRepo
+import ir.seven.jalas.repositories.UserRepo
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,6 +24,9 @@ class MeetingDataJpaTest {
     @Autowired
     private lateinit var meetingRepository: MeetingRepo
 
+    @Autowired
+    private lateinit var userRepo: UserRepo
+
 //    @Autowired
 //    private lateinit var testEntityManager: TestEntityManager
 
@@ -32,8 +36,10 @@ class MeetingDataJpaTest {
         val user = User(
                 userId = "GyHKso",
                 fullName = "rezacode",
-                username = "rezacode01@gmail.com"
+                username = "rezacode@gmail.com"
         )
+
+        userRepo.save(user)
 
         val meeting = Meeting(
                 mid = "qwerty",
