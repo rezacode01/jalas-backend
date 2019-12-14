@@ -1,4 +1,4 @@
-package dataJpa
+package unitTest
 
 import ir.seven.jalas.JalasApplication
 import ir.seven.jalas.entities.Meeting
