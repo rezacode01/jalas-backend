@@ -5,7 +5,7 @@ spring:
   application:
     name: seven-jalas
   datasource:
-    url: jdbc:postgresql://postgres
+    url: jdbc:postgresql://postgres:5432/jalasdb
     username: spring
     password: 1234
   jpa:
