@@ -127,7 +127,6 @@ class MeetingServiceImpl : MeetingService {
         }
 
         val savedObject = meetingRepo.save(meeting)
-
         return MeetingInfo(savedObject)
     }
 
