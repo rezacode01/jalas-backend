@@ -29,23 +29,23 @@ class MeetingDataJpaTest {
     @Test
     fun test() {
         println("first test is run successfully")
-//        val user = User(
-//                userId = "GyHKso",
-//                fullName = "rezacode",
-//                username = "rezacode01@gmail.com"
-//        )
-//
-//        val meeting = Meeting(
-//                mid = "qwerty",
-//                title = "title",
-//                creator = user
-//        )
-//
-//        meetingRepository.save(meeting)
-//
-////        testEntityManager.persist(meeting)
-////        testEntityManager.flush()
-//
-//        Assert.assertEquals("qwerty", meetingRepository.findById("qwerty").get().mid)
+        val user = User(
+                userId = "GyHKso",
+                fullName = "rezacode",
+                username = "rezacode01@gmail.com"
+        )
+
+        val meeting = Meeting(
+                mid = "qwerty",
+                title = "title",
+                creator = user
+        )
+
+        meetingRepository.save(meeting)
+
+//        testEntityManager.persist(meeting)
+//        testEntityManager.flush()
+
+        Assert.assertEquals("qwerty", meetingRepository.findById("qwerty").get().mid)
     }
 }
