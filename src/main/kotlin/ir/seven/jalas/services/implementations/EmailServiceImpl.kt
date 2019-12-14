@@ -12,9 +12,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import javax.annotation.PostConstruct
 
 @Service
+@Transactional
 class EmailServiceImpl : EmailService {
 
     @Value("\${jalas.base-url}")
@@ -32,20 +36,35 @@ class EmailServiceImpl : EmailService {
     var emailSender: JavaMailSender? = null
 
     override fun sendMeetingReservedRoomEmail(meetingId: String) {
-        val meeting = meetingService.getMeetingById(meetingId)
-        val userEmail = meeting.creator.username
+        val meeting = meetingService.getMeetingObjectById(meetingId)
 
-        sendSimpleMessage(
-                userEmail,
-                EmailSubjects.MEETING_RESERVED,
-                EmailBodies.MEETING_RESERVED
+        val receivers: MutableSet<String> = mutableSetOf()
+        receivers.add(meeting.creator.username)
+        meeting.slots.forEach { slot ->
+            slot.usersChoices.forEach { userChoice ->
+                receivers.add(userChoice.user.username)
+            }
+        }
+
+        val arguments = mapOf<String, String>(
+                "id" to meetingId,
+                "baseUrl" to baseUrl
         )
+        val template = render("meeting-link", arguments)
 
-        logger.info("Send email to $userEmail for reserving room")
+        receivers.forEach {
+            this.mimeMessageSender(
+                    it,
+                    EmailSubjects.MEETING_RESERVED,
+                    template
+            )
+        }
+
+        logger.info("Send email for reserving room")
     }
 
     override fun sendSimpleMessage(to: String, subject: String, text: String) {
-        val message: SimpleMailMessage = SimpleMailMessage();
+        val message: SimpleMailMessage = SimpleMailMessage()
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
@@ -67,7 +86,8 @@ class EmailServiceImpl : EmailService {
         )
     }
 
-    private fun mimeMessageSender(to: String, subject: String, text: String) {
+    @Async
+    fun mimeMessageSender(to: String, subject: String, text: String) {
         val message = emailSender!!.createMimeMessage()
 
         val helper = MimeMessageHelper(message, true)
