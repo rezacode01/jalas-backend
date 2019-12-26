@@ -6,6 +6,7 @@ import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.DTO.VoteMeetingRequest
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
+import ir.seven.jalas.entities.Participants
 import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.entities.UserChoice
 import ir.seven.jalas.enums.ErrorMessage
@@ -61,7 +62,7 @@ class MeetingServiceImpl : MeetingService {
                 creator = user
         )
 
-        val slots = request.slots.map {
+        meeting.slots = request.slots.map {
             Slot(
                     slotId = RandomString.make(10),
                     meeting = meeting,
@@ -70,7 +71,12 @@ class MeetingServiceImpl : MeetingService {
             )
         }.toMutableList()
 
-        meeting.slots = slots
+        meeting.participants = request.participants.map { participantUsername ->
+            Participants(
+                    user = userService.getUserObjectByUsername(participantUsername),
+                    meeting = meeting
+            )
+        }.toMutableList()
 
         val meetingObject = meetingRepo.save(meeting)
 

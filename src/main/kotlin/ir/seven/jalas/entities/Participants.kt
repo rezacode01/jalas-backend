@@ -1,6 +1,7 @@
 package ir.seven.jalas.entities
 
 import net.bytebuddy.utility.RandomString
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -20,5 +21,11 @@ class Participants(
 
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "meeting_id")
-        var meeting: Meeting = Meeting()
+        var meeting: Meeting = Meeting(),
+
+        @Column(
+                name = "creation_time",
+                nullable = false
+        )
+        var date: Date = Date()
 )

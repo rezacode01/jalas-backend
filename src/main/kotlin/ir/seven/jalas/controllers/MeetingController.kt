@@ -28,6 +28,9 @@ class MeetingController {
     @Autowired
     private lateinit var meetingService: MeetingService
 
+    /**
+     * participants of meeting should be exist in current users
+     */
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     fun createMeeting(
