@@ -3,6 +3,7 @@ package ir.seven.jalas.controllers
 import ir.seven.jalas.DTO.*
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.MeetingService
+import ir.seven.jalas.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -15,6 +16,9 @@ class MeetingController {
 
     @Autowired
     private lateinit var meetingService: MeetingService
+
+    @Autowired
+    private lateinit var userService: UserService
 
     /**
      * Participants of meeting should be exist in current users
@@ -49,6 +53,14 @@ class MeetingController {
             @PathVariable meetingId: String
     ): AvailableRooms {
         return meetingService.getAvailableRooms(meetingId)
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    fun getAllMyMeetings(
+            @AuthenticationPrincipal principal: Principal
+    ): NormalizedListFormat<MeetingInfo> {
+        return userService.getAllMyMeeting(principal.name).toNormalizedForm()
     }
 
     /**
