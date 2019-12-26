@@ -14,6 +14,8 @@ interface MeetingService {
     fun chooseSlot(meetingId: String, slotId: String): MeetingInfo
     fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo
     fun getAvailableRooms(meetingId: String): AvailableRooms
+    fun getComments(meetingId: String): List<CommentInfo>
+    fun createComment(meetingId: String, username: String, request: MeetingCommentRequest): CommentInfo
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
     fun changeMeetingStats(meetingId: String, status: MeetingStatus): MeetingInfo
     fun getTotalReservedRoomsCount(): Int

@@ -127,4 +127,23 @@ class MeetingController {
     ) : MeetingInfo {
         return meetingService.changeMeetingStats(meetingId, status)
     }
+
+    @PostMapping("/{meetingId}/comments")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
+    fun commentOnMeeting(
+            @AuthenticationPrincipal principal: Principal,
+            @PathVariable meetingId: String,
+            @RequestBody request: MeetingCommentRequest
+    ): CommentInfo {
+        return meetingService.createComment(meetingId, principal.name, request)
+    }
+
+    @GetMapping("{meetingId}/comments")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
+    fun getAllComments(
+            @AuthenticationPrincipal principal: Principal,
+            @PathVariable meetingId: String
+    ): NormalizedListFormat<CommentInfo> {
+        return meetingService.getComments(meetingId).toNormalizedForm()
+    }
 }
