@@ -6,6 +6,7 @@ import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.DTO.VoteMeetingRequest
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
+import ir.seven.jalas.entities.Participants
 import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.entities.UserChoice
 import ir.seven.jalas.enums.ErrorMessage
@@ -52,8 +53,8 @@ class MeetingServiceImpl : MeetingService {
 
     val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
-    override fun createMeeting(userId: String, request: CreateMeetingRequest): MeetingInfo {
-        val user = userService.getUserOBjectById(userId)
+    override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
+        val user = userService.getUserObjectByUsername(username)
 
         val meeting = Meeting(
                 mid = RandomString.make(10),
@@ -61,7 +62,7 @@ class MeetingServiceImpl : MeetingService {
                 creator = user
         )
 
-        val slots = request.slots.map {
+        meeting.slots = request.slots.map {
             Slot(
                     slotId = RandomString.make(10),
                     meeting = meeting,
@@ -70,7 +71,12 @@ class MeetingServiceImpl : MeetingService {
             )
         }.toMutableList()
 
-        meeting.slots = slots
+        meeting.participants = request.participants.map { participantUsername ->
+            Participants(
+                    user = userService.getUserObjectByUsername(participantUsername),
+                    meeting = meeting
+            )
+        }.toMutableList()
 
         val meetingObject = meetingRepo.save(meeting)
 
@@ -107,10 +113,10 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(savedMeeting)
     }
 
-    override fun voteSlot(meetingId: String, slotId: String, request: VoteMeetingRequest): MeetingInfo {
+    override fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
         val slot = slotService.getSlotObjectById(slotId)
-        val user = userService.getOrCreateUser(request.username)
+        val user = userService.getUserObjectByUsername(username)
 
         val meetingSlot = meeting.slots.find { it.slotId == slotId } ?:
                 throw EntityDoesNotExist(ErrorMessage.SLOT_DOES_NOT_EXIST)
@@ -124,10 +130,10 @@ class MeetingServiceImpl : MeetingService {
                         id = RandomString.make(6),
                         user = user,
                         slot = slot,
-                        state = request.vote
+                        state = vote
                 )
         ) else {
-            slotChoice.state = request.vote
+            slotChoice.state = vote
         }
 
         val savedObject = meetingRepo.save(meeting)
@@ -180,6 +186,23 @@ class MeetingServiceImpl : MeetingService {
     override fun getTotalReservedRoomsCount(): Int {
         val meetings = meetingRepo.findAll()
         return meetings.filter { it.state == MeetingStatus.RESERVED }.size
+    }
+
+    override fun isMeetingCreator(username: String, meetingId: String): Boolean {
+        val meeting = getMeetingObjectById(meetingId)
+
+        if (meeting.creator.username == username)
+            return true
+        return false
+    }
+
+    override fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean {
+        val meeting = getMeetingObjectById(meetingId)
+
+        if (meeting.creator.username == username) return true
+        meeting.participants.find { it.user.username == username } ?: return false
+
+        return true
     }
 
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {

@@ -42,5 +42,12 @@ class Meeting (
                 name = "state",
                 nullable = false
         )
-        var state: MeetingStatus = MeetingStatus.PENDING
+        var state: MeetingStatus = MeetingStatus.PENDING,
+
+        @OneToMany(
+                mappedBy = "meeting",
+                fetch = FetchType.LAZY,
+                cascade = [CascadeType.ALL]
+        )
+        var participants: MutableList<Participants> = mutableListOf()
 )
