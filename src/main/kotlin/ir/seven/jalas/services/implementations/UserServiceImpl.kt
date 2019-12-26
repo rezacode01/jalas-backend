@@ -1,20 +1,42 @@
 package ir.seven.jalas.services.implementations
 
+import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.DTO.UserInfo
 import ir.seven.jalas.entities.User
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.exceptions.EntityDoesNotExist
+import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.repositories.UserRepo
 import ir.seven.jalas.services.UserService
 import net.bytebuddy.utility.RandomString
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class UserServiceImpl: UserService {
 
     @Autowired
     private lateinit var userRepo: UserRepo
+
+    @Autowired
+    private lateinit var meetingRepo: MeetingRepo
+
+    override fun getAllMyMeeting(username: String): List<MeetingInfo> {
+        val user = getUserObjectByUsername(username)
+        val myMeeting: MutableMap<String, MeetingInfo> = mutableMapOf()
+
+        user.participants.forEach {
+            myMeeting[it.meeting.mid] = MeetingInfo(it.meeting)
+        }
+
+        meetingRepo.findByCreator(user).forEach { meeting ->
+            myMeeting[meeting.mid] = MeetingInfo(meeting)
+        }
+
+        return myMeeting.values.toList()
+    }
 
     override fun getUserInfoById(userId: String): UserInfo {
         val user = getUserById(userId)

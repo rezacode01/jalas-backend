@@ -1,9 +1,6 @@
 package ir.seven.jalas.services.implementations
 
-import ir.seven.jalas.DTO.AvailableRooms
-import ir.seven.jalas.DTO.CreateMeetingRequest
-import ir.seven.jalas.DTO.MeetingInfo
-import ir.seven.jalas.DTO.VoteMeetingRequest
+import ir.seven.jalas.DTO.*
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.entities.Participants
@@ -64,7 +61,6 @@ class MeetingServiceImpl : MeetingService {
 
         meeting.slots = request.slots.map {
             Slot(
-                    slotId = RandomString.make(10),
                     meeting = meeting,
                     startDate = Date.from(Instant.ofEpochSecond(it.from)),
                     endDate = Date.from(Instant.ofEpochSecond(it.to))
@@ -87,6 +83,28 @@ class MeetingServiceImpl : MeetingService {
         }
 
         return MeetingInfo(meetingObject)
+    }
+
+    override fun addSlot(meetingId: String, request: CreateSlotRequest): MeetingInfo {
+        val meeting = getMeetingObjectById(meetingId)
+
+        meeting.slots.add(
+                Slot(
+                        meeting = meeting,
+                        startDate =  Date.from(Instant.ofEpochSecond(request.from)),
+                        endDate = Date.from(Instant.ofEpochSecond(request.to))
+                )
+        )
+
+        meeting.participants.forEach { participants ->
+            emailService.sendAddSlotEmail(meeting.title, participants.user.username)
+        }
+
+        val savedMeeting = meetingRepo.save(meeting)
+
+        logger.info("Add new slot $ to meeting $meetingId")
+
+        return MeetingInfo(savedMeeting)
     }
 
     override fun getMeetingById(meetingId: String): MeetingInfo {
@@ -137,6 +155,11 @@ class MeetingServiceImpl : MeetingService {
         }
 
         val savedObject = meetingRepo.save(meeting)
+
+        emailService.sendNewVote(meeting.title, username, meeting.creator.username)
+
+        logger.info("User: $username vote for meeting: $meetingId")
+
         return MeetingInfo(savedObject)
     }
 

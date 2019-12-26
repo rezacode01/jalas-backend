@@ -1,5 +1,6 @@
 package ir.seven.jalas.entities
 
+import net.bytebuddy.utility.RandomString
 import org.hibernate.annotations.LazyCollection
 import org.hibernate.annotations.LazyCollectionOption
 import java.util.*
@@ -13,7 +14,7 @@ class Slot(
                 name = "slot_id",
                 nullable = false
         )
-        var slotId: String = "",
+        var slotId: String = RandomString.make(10),
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "mid")

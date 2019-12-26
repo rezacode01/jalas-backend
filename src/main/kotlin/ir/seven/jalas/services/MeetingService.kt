@@ -1,15 +1,13 @@
 package ir.seven.jalas.services
 
-import ir.seven.jalas.DTO.AvailableRooms
-import ir.seven.jalas.DTO.CreateMeetingRequest
-import ir.seven.jalas.DTO.MeetingInfo
-import ir.seven.jalas.DTO.VoteMeetingRequest
+import ir.seven.jalas.DTO.*
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.enums.UserChoiceState
 
 interface MeetingService {
     fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo
+    fun addSlot(meetingId: String, request: CreateSlotRequest): MeetingInfo
     fun getMeetingById(meetingId: String): MeetingInfo
     fun getMeetingObjectById(meetingId: String): Meeting
     fun getAllMeetings(): List<MeetingInfo>
