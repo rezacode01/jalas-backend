@@ -88,6 +88,10 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(meeting)
     }
 
+    override fun getMeetingObjectById(meetingId: String): Meeting {
+        return getMeetingByIdAndHandleException(meetingId)
+    }
+
     override fun getAllMeetings(): List<MeetingInfo> {
         return meetingRepo.findAll().map { MeetingInfo(it) }
     }
@@ -127,7 +131,6 @@ class MeetingServiceImpl : MeetingService {
         }
 
         val savedObject = meetingRepo.save(meeting)
-
         return MeetingInfo(savedObject)
     }
 
