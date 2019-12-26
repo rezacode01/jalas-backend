@@ -14,10 +14,12 @@ interface MeetingService {
     fun getMeetingObjectById(meetingId: String): Meeting
     fun getAllMeetings(): List<MeetingInfo>
     fun chooseSlot(meetingId: String, slotId: String): MeetingInfo
-    fun voteSlot(meetingId: String, slotId: String, request: VoteMeetingRequest): MeetingInfo
+    fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo
     fun getAvailableRooms(meetingId: String): AvailableRooms
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
     fun changeMeetingStats(meetingId: String, status: MeetingStatus): MeetingInfo
     fun getTotalReservedRoomsCount(): Int
+
+    fun isMeetingCreator(username: String, meetingId: String): Boolean
     fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean
 }

@@ -21,7 +21,7 @@ class UserServiceImpl: UserService {
         return UserInfo(user)
     }
 
-    override fun getUserOBjectById(userId: String): User {
+    override fun getUserObjectById(userId: String): User {
         return getUserById(userId)
     }
 

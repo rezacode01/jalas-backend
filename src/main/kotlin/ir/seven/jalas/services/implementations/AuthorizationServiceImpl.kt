@@ -13,7 +13,13 @@ class AuthorizationServiceImpl : AuthorizationService {
     @Autowired
     private lateinit var meetingService: MeetingService
 
+    override fun isMeetingCreator(username: String, meetingId: String): Boolean {
+        return meetingService.isMeetingCreator(username, meetingId)
+    }
+
     override fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean {
         return meetingService.hasParticipatedInMeeting(username, meetingId)
     }
+
+
 }

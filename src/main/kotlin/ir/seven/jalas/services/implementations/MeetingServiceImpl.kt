@@ -113,10 +113,10 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(savedMeeting)
     }
 
-    override fun voteSlot(meetingId: String, slotId: String, request: VoteMeetingRequest): MeetingInfo {
+    override fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
         val slot = slotService.getSlotObjectById(slotId)
-        val user = userService.getOrCreateUser(request.username)
+        val user = userService.getUserObjectByUsername(username)
 
         val meetingSlot = meeting.slots.find { it.slotId == slotId } ?:
                 throw EntityDoesNotExist(ErrorMessage.SLOT_DOES_NOT_EXIST)
@@ -130,10 +130,10 @@ class MeetingServiceImpl : MeetingService {
                         id = RandomString.make(6),
                         user = user,
                         slot = slot,
-                        state = request.vote
+                        state = vote
                 )
         ) else {
-            slotChoice.state = request.vote
+            slotChoice.state = vote
         }
 
         val savedObject = meetingRepo.save(meeting)
@@ -186,6 +186,14 @@ class MeetingServiceImpl : MeetingService {
     override fun getTotalReservedRoomsCount(): Int {
         val meetings = meetingRepo.findAll()
         return meetings.filter { it.state == MeetingStatus.RESERVED }.size
+    }
+
+    override fun isMeetingCreator(username: String, meetingId: String): Boolean {
+        val meeting = getMeetingObjectById(meetingId)
+
+        if (meeting.creator.username == username)
+            return true
+        return false
     }
 
     override fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean {

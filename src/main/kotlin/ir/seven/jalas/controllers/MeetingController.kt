@@ -45,39 +45,52 @@ class MeetingController {
     }
 
     @GetMapping("/{meetingId}")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
     fun getMeetingById(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String
     ): MeetingInfo {
         return meetingService.getMeetingById(meetingId)
     }
 
     @PostMapping("/{meetingId}/slots/{slotId}")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     fun chooseSlot(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,
             @PathVariable slotId: String
     ): MeetingInfo {
         return meetingService.chooseSlot(meetingId, slotId)
     }
 
+    /**
+     * Just participants of meeting can vote
+     */
     @PostMapping("/{meetingId}/slots/{slotId}/vote")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
     fun voteForSlot(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,
             @PathVariable slotId: String,
             @RequestBody request: VoteMeetingRequest
     ): MeetingInfo {
-        return meetingService.voteSlot(meetingId, slotId, request)
+        return meetingService.voteSlot(meetingId, slotId, principal.name, request.vote)
     }
 
     @PostMapping("/{meetingId}/rooms/{roomId}")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     fun chooseRoom(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,
             @PathVariable roomId: Int
     ): MeetingInfo {
         return meetingService.chooseRoom(meetingId, roomId)
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     @PostMapping("/{meetingId}/status")
     fun changeMeetingStatus(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,
             @RequestParam status: MeetingStatus
     ) : MeetingInfo {
