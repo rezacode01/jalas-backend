@@ -43,13 +43,22 @@ class User (
 
     @OneToMany(
             mappedBy = "user",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
     )
     var choices: MutableList<UserChoice> = mutableListOf(),
 
     @OneToMany(
             mappedBy = "user",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
     )
-    var participants: MutableList<Participants> = mutableListOf()
+    var participants: MutableList<Participants> = mutableListOf(),
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
+    )
+    var comments: MutableList<Comment> = mutableListOf()
 )
