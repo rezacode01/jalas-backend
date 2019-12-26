@@ -63,6 +63,20 @@ class EmailServiceImpl : EmailService {
         logger.info("Send email for reserving room")
     }
 
+    @Async
+    override fun sendAddSlotEmail(meetingTitle: String, email: String) {
+        val arguments = mapOf<String, String>(
+                "meeting" to meetingTitle
+        )
+        val template = render("meeting-add-slot", arguments)
+
+        this.mimeMessageSender(
+                to = email,
+                subject = EmailSubjects.MEETING_ADD_NEW_SLOT,
+                text = template
+        )
+    }
+
     override fun sendSimpleMessage(to: String, subject: String, text: String) {
         val message: SimpleMailMessage = SimpleMailMessage()
         message.setTo(to);

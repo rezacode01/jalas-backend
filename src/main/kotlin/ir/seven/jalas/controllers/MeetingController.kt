@@ -1,9 +1,6 @@
 package ir.seven.jalas.controllers
 
-import ir.seven.jalas.DTO.AvailableRooms
-import ir.seven.jalas.DTO.CreateMeetingRequest
-import ir.seven.jalas.DTO.MeetingInfo
-import ir.seven.jalas.DTO.VoteMeetingRequest
+import ir.seven.jalas.DTO.*
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,6 +26,16 @@ class MeetingController {
             @RequestBody request: CreateMeetingRequest
     ): MeetingInfo {
         return meetingService.createMeeting(principal.name, request)
+    }
+
+    @PostMapping("/{meetingId}/slots")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
+    fun addSlot(
+            @AuthenticationPrincipal principal: Principal,
+            @PathVariable meetingId: String,
+            @RequestBody request: CreateSlotRequest
+    ): MeetingInfo {
+        return meetingService.addSlot(meetingId, request)
     }
 
     /**
