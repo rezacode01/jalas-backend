@@ -1,5 +1,6 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.UserRole
 import javax.persistence.*
 import javax.validation.constraints.Email
 
@@ -34,7 +35,16 @@ class User (
     )
     val password: String = "",
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Column(
+            name = "role",
+            nullable = false
+    )
+    val role: UserRole = UserRole.USER,
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY
+    )
     var choices: MutableList<UserChoice> = mutableListOf()
 
 )

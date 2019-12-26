@@ -25,6 +25,14 @@ class UserServiceImpl: UserService {
         return getUserById(userId)
     }
 
+    override fun getUserObjectByUsername(username: String): User {
+        val user = userRepo.findByUsername(username)
+
+        if (user.isPresent)
+            return user.get()
+        throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+    }
+
     override fun getOrCreateUser(username: String): User {
         val user = userRepo.findByUsername(username)
         if (user.isPresent)
