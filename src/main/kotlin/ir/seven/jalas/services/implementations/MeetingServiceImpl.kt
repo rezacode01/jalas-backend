@@ -155,6 +155,11 @@ class MeetingServiceImpl : MeetingService {
         }
 
         val savedObject = meetingRepo.save(meeting)
+
+        emailService.sendNewVote(meeting.title, username, meeting.creator.username)
+
+        logger.info("User: $username vote for meeting: $meetingId")
+
         return MeetingInfo(savedObject)
     }
 

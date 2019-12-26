@@ -77,6 +77,23 @@ class EmailServiceImpl : EmailService {
         )
     }
 
+    @Async
+    override fun sendNewVote(meetingTitle: String, username: String, email: String) {
+        val arguments = mapOf<String, String>(
+                "meeting" to meetingTitle,
+                "user" to username
+        )
+        val template = render("meeting-new-vote", arguments)
+
+        this.mimeMessageSender(
+                to = email,
+                subject = EmailSubjects.MEETING_NEW_VOTE,
+                text = template
+        )
+
+        logger.info("Email with subject: ${EmailSubjects.MEETING_NEW_VOTE} to $email")
+    }
+
     override fun sendSimpleMessage(to: String, subject: String, text: String) {
         val message: SimpleMailMessage = SimpleMailMessage()
         message.setTo(to);
