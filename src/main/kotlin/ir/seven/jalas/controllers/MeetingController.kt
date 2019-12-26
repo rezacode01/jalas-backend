@@ -4,22 +4,13 @@ import ir.seven.jalas.DTO.AvailableRooms
 import ir.seven.jalas.DTO.CreateMeetingRequest
 import ir.seven.jalas.DTO.MeetingInfo
 import ir.seven.jalas.DTO.VoteMeetingRequest
-import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
-import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.server.ResponseStatusException
-import java.lang.Exception
 import java.security.Principal
-import java.text.SimpleDateFormat
-import java.util.*
 
 @RestController
 @RequestMapping("/meetings")
@@ -29,7 +20,7 @@ class MeetingController {
     private lateinit var meetingService: MeetingService
 
     /**
-     * participants of meeting should be exist in current users
+     * Participants of meeting should be exist in current users
      */
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -40,9 +31,14 @@ class MeetingController {
         return meetingService.createMeeting(principal.name, request)
     }
 
+    /**
+     * Just participants of a meeting is authorized
+     * A slot should be selected for meeting
+     */
     @GetMapping("/{meetingId}/available_rooms")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
     fun getAvailableRooms(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String
     ): AvailableRooms {
         return meetingService.getAvailableRooms(meetingId)

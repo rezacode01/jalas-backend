@@ -19,4 +19,5 @@ interface MeetingService {
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
     fun changeMeetingStats(meetingId: String, status: MeetingStatus): MeetingInfo
     fun getTotalReservedRoomsCount(): Int
+    fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean
 }

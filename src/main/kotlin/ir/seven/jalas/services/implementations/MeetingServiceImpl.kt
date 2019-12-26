@@ -188,6 +188,15 @@ class MeetingServiceImpl : MeetingService {
         return meetings.filter { it.state == MeetingStatus.RESERVED }.size
     }
 
+    override fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean {
+        val meeting = getMeetingObjectById(meetingId)
+
+        if (meeting.creator.username == username) return true
+        meeting.participants.find { it.user.username == username } ?: return false
+
+        return true
+    }
+
     private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {
         val meeting = meetingRepo.findById(meetingId)
         if (meeting.isPresent)
