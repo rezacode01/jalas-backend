@@ -54,7 +54,8 @@ class Meeting (
         @OneToMany(
                 mappedBy = "meeting",
                 fetch = FetchType.LAZY,
-                cascade = [CascadeType.ALL]
+                cascade = [CascadeType.ALL],
+                orphanRemoval = true
         )
         var comments: MutableList<Comment> = mutableListOf()
 )

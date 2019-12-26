@@ -146,4 +146,14 @@ class MeetingController {
     ): NormalizedListFormat<CommentInfo> {
         return meetingService.getComments(meetingId).toNormalizedForm()
     }
+
+    @DeleteMapping("{meetingId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
+    fun deleteCommentOnMeeting(
+            @AuthenticationPrincipal principal: Principal,
+            @PathVariable meetingId: String,
+            @PathVariable commentId: String
+    ) {
+        meetingService.deleteComment(meetingId, commentId)
+    }
 }

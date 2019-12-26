@@ -209,6 +209,15 @@ class MeetingServiceImpl : MeetingService {
         return meeting.comments.map { comment -> CommentInfo(comment) }
     }
 
+    override fun deleteComment(meetingId: String, commentId: String) {
+        val meeting = getMeetingObjectById(meetingId)
+
+        meeting.comments.find { it.commentId == commentId } ?: throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
+        meeting.comments.removeIf { it.commentId == commentId }
+
+//        meetingRepo.save(meeting)
+    }
+
     override fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
 
