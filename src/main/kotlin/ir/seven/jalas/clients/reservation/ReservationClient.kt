@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @FeignClient(
         name = "reserve-system",
-        url = "http://213.233.176.40",
+        url = "http://5.253.27.176",
         configuration = [ReservationConfiguration::class]
 )
 interface ReservationClient {
