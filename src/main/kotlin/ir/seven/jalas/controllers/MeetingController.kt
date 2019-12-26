@@ -44,6 +44,9 @@ class MeetingController {
         return meetingService.getAvailableRooms(meetingId)
     }
 
+    /**
+     * Just participants of a meeting could see it
+     */
     @GetMapping("/{meetingId}")
     @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
     fun getMeetingById(
@@ -53,6 +56,9 @@ class MeetingController {
         return meetingService.getMeetingById(meetingId)
     }
 
+    /**
+     * Just creator of meeting could choose slot for meeting
+     */
     @PostMapping("/{meetingId}/slots/{slotId}")
     @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     fun chooseSlot(
@@ -77,6 +83,9 @@ class MeetingController {
         return meetingService.voteSlot(meetingId, slotId, principal.name, request.vote)
     }
 
+    /**
+     * Just creator of a meeting could choose room for meeting
+     */
     @PostMapping("/{meetingId}/rooms/{roomId}")
     @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     fun chooseRoom(
@@ -87,6 +96,9 @@ class MeetingController {
         return meetingService.chooseRoom(meetingId, roomId)
     }
 
+    /**
+     * Just creator of a meeting could cancel or change status of meeting
+     */
     @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
     @PostMapping("/{meetingId}/status")
     fun changeMeetingStatus(
