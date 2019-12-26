@@ -11,10 +11,13 @@ import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.server.ResponseStatusException
 import java.lang.Exception
+import java.security.Principal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,11 +29,12 @@ class MeetingController {
     private lateinit var meetingService: MeetingService
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     fun createMeeting(
-            @RequestParam userId: String,
+            @AuthenticationPrincipal principal: Principal,
             @RequestBody request: CreateMeetingRequest
     ): MeetingInfo {
-        return meetingService.createMeeting(userId, request)
+        return meetingService.createMeeting(principal.name, request)
     }
 
     @GetMapping("/{meetingId}/available_rooms")

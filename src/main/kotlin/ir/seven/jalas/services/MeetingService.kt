@@ -9,7 +9,7 @@ import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.enums.UserChoiceState
 
 interface MeetingService {
-    fun createMeeting(userId: String, request: CreateMeetingRequest): MeetingInfo
+    fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo
     fun getMeetingById(meetingId: String): MeetingInfo
     fun getMeetingObjectById(meetingId: String): Meeting
     fun getAllMeetings(): List<MeetingInfo>

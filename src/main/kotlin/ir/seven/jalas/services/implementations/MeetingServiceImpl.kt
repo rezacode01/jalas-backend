@@ -52,8 +52,8 @@ class MeetingServiceImpl : MeetingService {
 
     val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
-    override fun createMeeting(userId: String, request: CreateMeetingRequest): MeetingInfo {
-        val user = userService.getUserOBjectById(userId)
+    override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
+        val user = userService.getUserObjectByUsername(username)
 
         val meeting = Meeting(
                 mid = RandomString.make(10),
