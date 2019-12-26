@@ -45,6 +45,11 @@ class User (
             mappedBy = "user",
             fetch = FetchType.LAZY
     )
-    var choices: MutableList<UserChoice> = mutableListOf()
+    var choices: MutableList<UserChoice> = mutableListOf(),
 
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY
+    )
+    var participants: MutableList<Participants> = mutableListOf()
 )

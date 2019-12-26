@@ -38,6 +38,7 @@ class MeetingController {
     }
 
     @GetMapping("/{meetingId}/available_rooms")
+    @PreAuthorize("hasRole('ROLE_USER')")
     fun getAvailableRooms(
             @PathVariable meetingId: String
     ): AvailableRooms {
