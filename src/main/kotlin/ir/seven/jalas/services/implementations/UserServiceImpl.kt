@@ -38,8 +38,8 @@ class UserServiceImpl: UserService {
         return myMeeting.values.toList()
     }
 
-    override fun getUserInfoById(userId: String): UserInfo {
-        val user = getUserById(userId)
+    override fun getUserInfoByUsername(username: String): UserInfo {
+        val user = getUserObjectByUsername(username)
         return UserInfo(user)
     }
 

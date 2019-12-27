@@ -25,7 +25,8 @@ class User (
     @Email
     @Column(
             name = "username",
-            nullable = false
+            nullable = false,
+            unique = true
     )
     var username: String = "",
 
