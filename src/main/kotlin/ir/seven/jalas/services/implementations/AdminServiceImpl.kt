@@ -30,7 +30,7 @@ class AdminServiceImpl : AdminService {
         val changedMeetings = meetingService.getTotalChangedMeetings()
         response[CHANGED_MEETINGS] = changedMeetings.toString()
 
-        val avgMeetingCreationTime = 8.4
+        val avgMeetingCreationTime = meetingService.getAverageMeetingCreationTime() / 1000
         response[AVERAGE_RESPONSE_TIME] = "$avgMeetingCreationTime s"
 
         return response

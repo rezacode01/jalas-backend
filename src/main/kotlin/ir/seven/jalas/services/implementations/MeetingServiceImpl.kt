@@ -25,6 +25,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
+import kotlin.math.absoluteValue
 
 @Service
 @Transactional
@@ -242,6 +243,9 @@ class MeetingServiceImpl : MeetingService {
                 status == MeetingStatus.PENDING)
             meeting.changed = true
 
+        if (status == MeetingStatus.RESERVED)
+            meeting.submitTime = Date()
+
         meeting.state = status
         val savedObject = meetingRepo.save(meeting)
 
@@ -261,6 +265,13 @@ class MeetingServiceImpl : MeetingService {
     override fun getTotalChangedMeetings(): Int {
         val meetings = meetingRepo.findAll()
         return meetings.filter { it.changed }.size
+    }
+
+    override fun getAverageMeetingCreationTime(): Double {
+        val meetings = meetingRepo.findAll()
+        return meetings.filter { it.state == MeetingStatus.RESERVED }.map { meeting ->
+            (meeting.submitTime?.time ?: 0L) - meeting.creationTime.time
+        }.average().absoluteValue
     }
 
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {

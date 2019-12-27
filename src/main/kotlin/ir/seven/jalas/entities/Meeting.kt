@@ -1,6 +1,7 @@
 package ir.seven.jalas.entities
 
 import ir.seven.jalas.enums.MeetingStatus
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -49,6 +50,18 @@ class Meeting (
                 nullable = false
         )
         var changed: Boolean = false,
+
+        @Column(
+                name = "creation_time",
+                nullable = false
+        )
+        var creationTime: Date = Date(),
+
+        @Column(
+                name = "submit_time",
+                nullable = true
+        )
+        var submitTime: Date? = null,
 
         @OneToMany(
                 mappedBy = "meeting",
