@@ -18,7 +18,7 @@ interface MeetingService {
     fun createComment(meetingId: String, username: String, request: MeetingCommentRequest): CommentInfo
     fun deleteComment(meetingId: String, commentId: String)
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
-    fun changeMeetingStats(meetingId: String, status: MeetingStatus): MeetingInfo
+    fun changeMeetingState(meetingId: String, status: MeetingStatus): MeetingInfo
 
     fun getTotalReservedRoomsCount(): Int
     fun getTotalCancelledMeetings(): Int

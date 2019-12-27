@@ -125,7 +125,7 @@ class MeetingController {
             @PathVariable meetingId: String,
             @RequestParam status: MeetingStatus
     ) : MeetingInfo {
-        return meetingService.changeMeetingStats(meetingId, status)
+        return meetingService.changeMeetingState(meetingId, status)
     }
 
     @PostMapping("/{meetingId}/comments")

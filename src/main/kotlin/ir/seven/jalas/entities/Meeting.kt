@@ -44,6 +44,12 @@ class Meeting (
         )
         var state: MeetingStatus = MeetingStatus.PENDING,
 
+        @Column(
+                name = "changed",
+                nullable = false
+        )
+        var changed: Boolean = false,
+
         @OneToMany(
                 mappedBy = "meeting",
                 fetch = FetchType.LAZY,

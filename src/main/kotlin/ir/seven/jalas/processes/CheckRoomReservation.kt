@@ -8,7 +8,6 @@ import ir.seven.jalas.services.MeetingService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -46,7 +45,7 @@ class CheckRoomReservation {
                         )
 
                     // also we can check response status code
-                    meetingService.changeMeetingStats(meeting.id, MeetingStatus.RESERVED)
+                    meetingService.changeMeetingState(meeting.id, MeetingStatus.RESERVED)
                     emailService.sendMeetingReservedRoomEmail(meeting.id)
 
                     logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
@@ -54,7 +53,7 @@ class CheckRoomReservation {
                     if (exp.message?.contains("400") == true) {
                         logger.error("There is no empty room")
 
-                        meetingService.changeMeetingStats(meeting.id, MeetingStatus.PENDING)
+                        meetingService.changeMeetingState(meeting.id, MeetingStatus.PENDING)
                     }
                     logger.error("-> Failed to reserve room ${meeting.room} for meeting ${meeting.id}")
                 }

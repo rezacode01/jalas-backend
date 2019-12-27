@@ -231,11 +231,16 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(savedObject)
     }
 
-    override fun changeMeetingStats(meetingId: String, status: MeetingStatus) : MeetingInfo {
+    override fun changeMeetingState(meetingId: String, status: MeetingStatus) : MeetingInfo {
         val meeting = getMeetingByIdAndHandleException(meetingId)
 
         if (meeting.state == MeetingStatus.CANCELLED || meeting.state == MeetingStatus.RESERVED)
             throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
+
+        if ((meeting.state == MeetingStatus.ROOM_SUBMITTED ||
+                        meeting.state == MeetingStatus.TIME_SUBMITTED) &&
+                status == MeetingStatus.PENDING)
+            meeting.changed = true
 
         meeting.state = status
         val savedObject = meetingRepo.save(meeting)
