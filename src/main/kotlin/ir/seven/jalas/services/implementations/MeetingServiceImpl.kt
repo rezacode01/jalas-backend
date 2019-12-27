@@ -248,6 +248,11 @@ class MeetingServiceImpl : MeetingService {
         return meetings.filter { it.state == MeetingStatus.RESERVED }.size
     }
 
+    override fun getTotalCancelledMeetings(): Int {
+        val meetings = meetingRepo.findAll()
+        return meetings.filter { it.state == MeetingStatus.CANCELLED }.size
+    }
+
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {
         val meeting = getMeetingObjectById(meetingId)
 
