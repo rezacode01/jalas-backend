@@ -11,6 +11,7 @@ class AdminServiceImpl : AdminService {
     companion object {
         const val RESERVED_ROOMS = "Reserved rooms"
         const val CANCELLED_MEETINGS = "Cancelled meetings"
+        const val CHANGED_MEETINGS = "Changed meetings"
         const val AVERAGE_RESPONSE_TIME = "Average response time"
     }
 
@@ -25,6 +26,9 @@ class AdminServiceImpl : AdminService {
 
         val cancelledMeetings = meetingService.getTotalCancelledMeetings()
         response[CANCELLED_MEETINGS] = cancelledMeetings.toString()
+
+        val changedMeetings = meetingService.getTotalChangedMeetings()
+        response[CHANGED_MEETINGS] = changedMeetings.toString()
 
         val avgMeetingCreationTime = 8.4
         response[AVERAGE_RESPONSE_TIME] = "$avgMeetingCreationTime s"
