@@ -9,13 +9,13 @@ data class CommentInfo(
         val date: String,
         val replyTo: CommentInfo?
 ) {
-    constructor(entity: Comment): this(
+    constructor(entity: Comment, depth: Int = 1): this(
             UserInfo(entity.user),
             entity.commentId,
             entity.message,
             entity.date.toString(),
-            if (entity.repliedComment != null)
-                CommentInfo(entity.repliedComment!!)
+            if (entity.repliedComment != null && depth > 0)
+                CommentInfo(entity.repliedComment!!, depth - 1)
             else
                 null
     )
