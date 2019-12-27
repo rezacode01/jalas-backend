@@ -36,3 +36,22 @@ spring:
 
 jalas:
   base-url: localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: ALWAYS
+    web:
+      exposure:
+        include: info,health,metrics,hystrix.stream,httptrace
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
