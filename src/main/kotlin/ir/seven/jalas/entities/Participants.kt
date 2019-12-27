@@ -5,7 +5,10 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "participants")
+@Table(
+        name = "participants",
+        uniqueConstraints = [UniqueConstraint(name = "multiple_participants", columnNames = ["user_id", "meeting_id"])]
+)
 class Participants(
         @Id
         @Column(
