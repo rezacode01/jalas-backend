@@ -19,6 +19,7 @@ class ResourceServerConfiguration(
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/admin/**").permitAll()
                 .antMatchers("/actuator/**").permitAll()
 
                 .anyRequest().authenticated()
