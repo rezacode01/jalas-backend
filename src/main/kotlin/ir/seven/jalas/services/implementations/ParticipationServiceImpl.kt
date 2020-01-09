@@ -36,6 +36,18 @@ class ParticipationServiceImpl : ParticipationService {
 
     val logger: Logger = LoggerFactory.getLogger(ParticipationServiceImpl::class.java)
 
+    override fun addParticipantsToMeeting(meeting: Meeting, participants: List<String>) {
+        participants.forEach { username ->
+            val user = userService.getOrCreateUser(username)
+
+            if (! participationRepo.findByUserAndMeeting(user, meeting).isPresent) {
+                participationRepo.save(Participants(user = user, meeting = meeting))
+
+                emailService.sendMeetingInvitationEmail(meeting, username)
+            }
+        }
+    }
+
     override fun addParticipantToMeeting(username: String, meetingId: String) {
         val user = userService.getOrCreateUser(username)
         val meeting = meetingService.getMeetingObjectById(meetingId)

@@ -12,6 +12,7 @@ import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.services.*
+import ir.seven.jalas.utilities.toDate
 import ir.seven.jalas.utilities.toSimpleDateFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,44 +43,31 @@ class MeetingServiceImpl : MeetingService {
     @Autowired
     private lateinit var emailService: EmailService
 
+    @Autowired
+    private lateinit var participationService: ParticipationService
+
     val logger: Logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
         val meeting = Meeting(title = request.title)
 
         meeting.slots = request.slots.map {
-            Slot(
-                    meeting = meeting,
-                    startDate = Date.from(Instant.ofEpochSecond(it.from)),
-                    endDate = Date.from(Instant.ofEpochSecond(it.to))
-            )
+            Slot(meeting = meeting, startDate = it.from.toDate(), endDate = it.to.toDate())
         }.toMutableList()
 
-        meeting.participants = request.participants.map { participant ->
-            Participants(
-                    user = userService.getUserObjectByUsername(participant),
-                    meeting = meeting
-            )
-        }.toMutableList()
-
-        val creator = meeting.participants.find { it.user.username == username }
-        if (creator != null)
-            creator.role = MeetingParticipationRole.CREATOR
-        else
-            meeting.participants.add(
-                    Participants(
-                            user = userService.getUserObjectByUsername(username),
-                            meeting = meeting
-                    )
-            )
+        meeting.participants.add(
+                Participants(
+                        user = userService.getUserObjectByUsername(username),
+                        meeting = meeting,
+                        role = MeetingParticipationRole.CREATOR
+                )
+        )
 
         val meetingObject = meetingRepo.save(meeting)
 
-        logger.info("Create meeting ${meeting.mid}")
+        participationService.addParticipantsToMeeting(meeting, request.participants)
 
-        request.participants.forEach {
-            emailService.sendMeetingInvitationEmail(meetingObject, it)
-        }
+        logger.info("Create meeting ${meeting.mid}")
 
         return MeetingInfo(meetingObject)
     }
