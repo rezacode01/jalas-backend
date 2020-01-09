@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.Exception
-import java.time.Instant
 import java.util.*
 import kotlin.math.absoluteValue
 
@@ -76,11 +75,7 @@ class MeetingServiceImpl : MeetingService {
         val meeting = getMeetingObjectById(meetingId)
 
         meeting.slots.add(
-                Slot(
-                        meeting = meeting,
-                        startDate =  Date.from(Instant.ofEpochSecond(request.from)),
-                        endDate = Date.from(Instant.ofEpochSecond(request.to))
-                )
+                Slot(meeting = meeting, startDate =  request.from.toDate(), endDate = request.to.toDate())
         )
 
         meeting.participants.forEach { participants ->
@@ -89,7 +84,7 @@ class MeetingServiceImpl : MeetingService {
 
         val savedMeeting = meetingRepo.save(meeting)
 
-        logger.info("Add new slot $ to meeting $meetingId")
+        logger.info("Add new slot to meeting $meetingId")
 
         return MeetingInfo(savedMeeting)
     }
@@ -202,7 +197,7 @@ class MeetingServiceImpl : MeetingService {
     override fun getAverageMeetingCreationTime(): Double {
         val meetings = meetingRepo.findAll()
         return meetings.filter { it.state == MeetingStatus.RESERVED }.map { meeting ->
-            (meeting.submitTime?.time ?: 0L) - meeting.creationTime.time
+            meeting.getMeetingCreationTime()
         }.average().absoluteValue
     }
 

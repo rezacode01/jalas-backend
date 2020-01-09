@@ -90,4 +90,9 @@ class Meeting (
                 this.participants.find { it.user.username == username } ?: return false
                 return true
         }
+
+        @Transient
+        fun getMeetingCreationTime(): Long {
+                return (this.submitTime?.time ?: 0L) - this.creationTime.time
+        }
 }
