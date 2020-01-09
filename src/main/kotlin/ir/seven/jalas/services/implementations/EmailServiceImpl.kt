@@ -89,6 +89,20 @@ class EmailServiceImpl : EmailService {
     }
 
     @Async
+    override fun sendNewParticipantEmail(meetingTitle: String, email: String) {
+        val arguments = mapOf(
+                "meeting" to meetingTitle
+        )
+        val template = render("meeting-add-participant", arguments)
+
+        this.mimeMessageSender(
+                to = email,
+                subject = EmailSubjects.MEETING_ADD_PARTICIPANT,
+                text = template
+        )
+    }
+
+    @Async
     override fun sendNewVoteEmail(meetingTitle: String, username: String, email: String) {
         val arguments = mapOf(
                 "meeting" to meetingTitle,
@@ -121,7 +135,6 @@ class EmailServiceImpl : EmailService {
         )
     }
 
-    @Async
     fun mimeMessageSender(to: String, subject: String, text: String) {
         val message = emailSender!!.createMimeMessage()
 

@@ -1,6 +1,7 @@
 package ir.seven.jalas.entities
 
 import ir.seven.jalas.enums.UserRole
+import net.bytebuddy.utility.RandomString
 import javax.persistence.*
 import javax.validation.constraints.Email
 
@@ -14,7 +15,7 @@ class User (
             name = "user_id",
             nullable = false
     )
-    var userId: String = "",
+    var userId: String = RandomString.make(6),
 
     @Column(
             name = "fullname",
