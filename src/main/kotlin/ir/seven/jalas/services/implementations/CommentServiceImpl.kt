@@ -40,28 +40,25 @@ class CommentServiceImpl : CommentService {
 
     override fun deleteComment(meetingId: String, commentId: String) {
         val meeting = meetingService.getMeetingObjectById(meetingId)
+        this.getCommentById(commentId)
 
-        meeting.comments.find { it.commentId == commentId } ?: throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
-        meeting.comments.removeIf { it.commentId == commentId }
-
-//        meetingRepo.save(meeting)
+        commentRepo.deleteByCommentIdAndMeeting(commentId, meeting)
     }
 
     override fun createComment(meetingId: String, username: String, request: MeetingCommentRequest): CommentInfo {
         val meeting = meetingService.getMeetingObjectById(meetingId)
         val user = userService.getUserObjectByUsername(username)
 
-        val repliedMeeting =
+        val repliedComment =
                 if (request.replyTo != null)
-                    meeting.comments.find { it.commentId == request.replyTo } ?:
-                    throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
+                    getCommentById(request.replyTo)
                 else null
 
         val newComment = Comment(
                 user = user,
                 meeting = meeting,
                 message = request.message,
-                repliedComment = repliedMeeting
+                repliedComment = repliedComment
         )
 
         commentRepo.save(newComment)
@@ -69,5 +66,13 @@ class CommentServiceImpl : CommentService {
         logger.info("Create comment with message: ${request.message} on meeting $meetingId")
 
         return CommentInfo(newComment)
+    }
+
+    private fun getCommentById(commentId: String): Comment {
+        val comment = commentRepo.findById(commentId)
+
+        if (comment.isPresent)
+            return comment.get()
+        throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
     }
 }

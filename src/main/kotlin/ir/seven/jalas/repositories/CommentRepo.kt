@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CommentRepo : JpaRepository<Comment, String> {
     fun findCommentsByMeeting(meeting: Meeting): List<Comment>
+    fun deleteByCommentIdAndMeeting(commentId: String, meeting: Meeting)
 }
