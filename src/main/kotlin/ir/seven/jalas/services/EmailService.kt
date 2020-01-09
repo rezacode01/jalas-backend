@@ -10,6 +10,7 @@ interface EmailService {
     fun sendDeleteSlotEmail(meetingTitle: String, email: String)
 
     fun sendNewParticipantEmail(meetingTitle: String, email: String)
+    fun sendDeleteParticipantEmail(meetingTitle: String, email: String)
 
     fun sendNewVoteEmail(meetingTitle: String, username: String, email: String)
 }

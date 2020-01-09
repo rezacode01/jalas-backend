@@ -28,7 +28,7 @@ class ParticipationServiceImpl : ParticipationService {
     @Autowired
     private lateinit var emailService: EmailService
 
-    val logger: Logger = LoggerFactory.getLogger(SlotServiceImpl::class.java)
+    val logger: Logger = LoggerFactory.getLogger(ParticipationServiceImpl::class.java)
 
     override fun addParticipantToMeeting(username: String, meetingId: String) {
         val user = userService.getOrCreateUser(username)

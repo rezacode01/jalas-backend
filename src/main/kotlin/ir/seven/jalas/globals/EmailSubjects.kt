@@ -8,6 +8,7 @@ class EmailSubjects {
         const val MEETING_DELETE_SLOT = "A slot deleted from meeting"
 
         const val MEETING_ADD_PARTICIPANT = "You are added to meeting"
+        const val MEETING_DELETE_PARTICIPANT = "You are removed from meeting"
 
         const val MEETING_NEW_VOTE = "A new vote committed to meeting"
     }
