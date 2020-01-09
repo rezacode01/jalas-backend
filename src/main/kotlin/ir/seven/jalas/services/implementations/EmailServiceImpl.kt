@@ -91,6 +91,7 @@ class EmailServiceImpl : EmailService {
         logger.info("Email with subject: ${EmailSubjects.MEETING_NEW_VOTE} to $email")
     }
 
+    @Async
     override fun sendMeetingInvitationEmail(meeting: Meeting, email: String) {
         val arguments = mapOf(
                 "id" to meeting.mid,

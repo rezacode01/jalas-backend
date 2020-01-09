@@ -11,10 +11,7 @@ import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
-import ir.seven.jalas.services.EmailService
-import ir.seven.jalas.services.MeetingService
-import ir.seven.jalas.services.SlotService
-import ir.seven.jalas.services.UserService
+import ir.seven.jalas.services.*
 import ir.seven.jalas.utilities.toSimpleDateFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -48,17 +45,7 @@ class MeetingServiceImpl : MeetingService {
     val logger: Logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
-        val user = userService.getUserObjectByUsername(username)
-
         val meeting = Meeting(title = request.title)
-
-        meeting.participants.add(
-                Participants(
-                        user = user,
-                        meeting = meeting,
-                        role = MeetingParticipationRole.CREATOR
-                )
-        )
 
         meeting.slots = request.slots.map {
             Slot(
@@ -68,12 +55,23 @@ class MeetingServiceImpl : MeetingService {
             )
         }.toMutableList()
 
-        meeting.participants = request.participants.map { participantUsername ->
+        meeting.participants = request.participants.map { participant ->
             Participants(
-                    user = userService.getUserObjectByUsername(participantUsername),
+                    user = userService.getUserObjectByUsername(participant),
                     meeting = meeting
             )
         }.toMutableList()
+
+        val creator = meeting.participants.find { it.user.username == username }
+        if (creator != null)
+            creator.role = MeetingParticipationRole.CREATOR
+        else
+            meeting.participants.add(
+                    Participants(
+                            user = userService.getUserObjectByUsername(username),
+                            meeting = meeting
+                    )
+            )
 
         val meetingObject = meetingRepo.save(meeting)
 
