@@ -7,6 +7,8 @@ import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.repositories.SlotRepo
+import ir.seven.jalas.services.EmailService
+import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
 import ir.seven.jalas.services.UserService
 import org.slf4j.Logger
@@ -25,7 +27,28 @@ class SlotServiceImpl : SlotService {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var emailService: EmailService
+
+    @Autowired
+    private lateinit var meetingService: MeetingService
+
     val logger: Logger = LoggerFactory.getLogger(SlotServiceImpl::class.java)
+
+    override fun deleteSlot(meetingId: String, slotId: String) {
+        val meeting = meetingService.getMeetingObjectById(meetingId)
+        val slot = getSlotObjectById(slotId)
+
+        val voters = slot.usersChoices.map { userChoice -> userChoice.user.username }
+
+        voters.forEach { email ->
+            emailService.sendDeleteSlotEmail(meeting.title, email)
+        }
+
+        slotRepo.deleteById(slotId)
+
+        logger.info("Delete slot: $slotId from meeting: $meetingId")
+    }
 
     override fun voteSlot(slotId: String, username: String, vote: UserChoiceState): SlotInfo {
         val slot = getSlotObjectById(slotId)
@@ -52,8 +75,6 @@ class SlotServiceImpl : SlotService {
 
         return SlotInfo.toSlotInfo(savedObject)
     }
-
-
 
     override fun getSlotObjectById(slotId: String): Slot {
         val slot = slotRepo.findById(slotId)

@@ -2,7 +2,6 @@ package ir.seven.jalas.controllers
 
 import ir.seven.jalas.DTO.*
 import ir.seven.jalas.enums.MeetingStatus
-import ir.seven.jalas.services.CommentService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,9 +19,6 @@ class MeetingController {
 
     @Autowired
     private lateinit var userService: UserService
-
-//    @Autowired
-//    private lateinit var commentService: CommentService
 
     /**
      * Participants of meeting should be exist in current users

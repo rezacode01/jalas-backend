@@ -75,6 +75,20 @@ class EmailServiceImpl : EmailService {
     }
 
     @Async
+    override fun sendDeleteSlotEmail(meetingTitle: String, email: String) {
+        val arguments = mapOf(
+                "meeting" to meetingTitle
+        )
+        val template = render("meeting-delete-slot", arguments)
+
+        this.mimeMessageSender(
+                to = email,
+                subject = EmailSubjects.MEETING_DELETE_SLOT,
+                text = template
+        )
+    }
+
+    @Async
     override fun sendNewVoteEmail(meetingTitle: String, username: String, email: String) {
         val arguments = mapOf(
                 "meeting" to meetingTitle,
