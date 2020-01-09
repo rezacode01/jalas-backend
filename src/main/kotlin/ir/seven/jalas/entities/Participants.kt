@@ -1,5 +1,6 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.MeetingParticipationRole
 import net.bytebuddy.utility.RandomString
 import java.util.*
 import javax.persistence.*
@@ -25,6 +26,12 @@ class Participants(
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "meeting_id")
         var meeting: Meeting = Meeting(),
+
+        @Column(
+                name = "role",
+                nullable = false
+        )
+        var role: MeetingParticipationRole = MeetingParticipationRole.INVITED,
 
         @Column(
                 name = "creation_time",
