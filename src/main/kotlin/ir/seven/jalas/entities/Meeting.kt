@@ -1,6 +1,8 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.exceptions.EntityDoesNotExist
 import java.util.*
 import javax.persistence.*
 
@@ -77,4 +79,18 @@ class Meeting (
                 orphanRemoval = true
         )
         var comments: MutableList<Comment> = mutableListOf()
-)
+) {
+        @Transient
+        fun getMeetingCreator(): User {
+                val participant = this.participants.find { it.isCreator() } ?:
+                        throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+
+                return participant.user
+        }
+
+        @Transient
+        fun isParticipated(username: String): Boolean {
+                this.participants.find { it.user.username == username } ?: return false
+                return true
+        }
+}

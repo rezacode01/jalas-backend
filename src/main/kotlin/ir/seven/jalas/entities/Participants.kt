@@ -38,4 +38,10 @@ class Participants(
                 nullable = false
         )
         var date: Date = Date()
-)
+) {
+        @Transient
+        fun isCreator(): Boolean {
+                if (role == MeetingParticipationRole.CREATOR) return true
+                return false
+        }
+}

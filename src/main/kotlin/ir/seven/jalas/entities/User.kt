@@ -62,4 +62,7 @@ class User (
             cascade = [CascadeType.ALL]
     )
     var comments: MutableList<Comment> = mutableListOf()
-)
+) {
+    @Transient
+    fun getEmail(): String = this.username
+}

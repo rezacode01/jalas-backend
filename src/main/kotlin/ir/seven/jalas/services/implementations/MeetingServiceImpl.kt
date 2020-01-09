@@ -4,6 +4,7 @@ import ir.seven.jalas.DTO.*
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.*
 import ir.seven.jalas.enums.ErrorMessage
+import ir.seven.jalas.enums.MeetingParticipationRole
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.exceptions.BadRequestException
@@ -106,12 +107,15 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun getMeetingById(meetingId: String): MeetingInfo {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
         return MeetingInfo(meeting)
     }
 
     override fun getMeetingObjectById(meetingId: String): Meeting {
-        return getMeetingByIdAndHandleException(meetingId)
+        val meeting = meetingRepo.findById(meetingId)
+        if (meeting.isPresent)
+            return meeting.get()
+        throw EntityDoesNotExist(ErrorMessage.MEETING_DOES_NOT_EXIST)
     }
 
     override fun getAllMeetings(): List<MeetingInfo> {
@@ -119,7 +123,7 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun chooseSlot(meetingId: String, slotId: String): MeetingInfo {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
         val slot = slotService.getSlotObjectById(slotId)
 
         meeting.slotId = slot
@@ -130,7 +134,7 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
         val slot = slotService.getSlotObjectById(slotId)
         val user = userService.getUserObjectByUsername(username)
 
@@ -154,7 +158,10 @@ class MeetingServiceImpl : MeetingService {
 
         val savedObject = meetingRepo.save(meeting)
 
-        emailService.sendNewVote(meeting.title, username, meeting.creator.username)
+        val meetingCreator = meeting.participants.find { it.role == MeetingParticipationRole.CREATOR }?.user
+                ?: throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+
+        emailService.sendNewVote(meeting.title, username, meetingCreator.getEmail())
 
         logger.info("User: $username vote for meeting: $meetingId")
 
@@ -162,7 +169,7 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun getAvailableRooms(meetingId: String): AvailableRooms {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
         if (meeting.state >= MeetingStatus.TIME_SUBMITTED && meeting.slotId != null) {
             val slot = meeting.slotId!!
 
@@ -220,7 +227,7 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
 
         if (meeting.slotId == null)
             throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
@@ -233,7 +240,7 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun changeMeetingState(meetingId: String, status: MeetingStatus) : MeetingInfo {
-        val meeting = getMeetingByIdAndHandleException(meetingId)
+        val meeting = getMeetingObjectById(meetingId)
 
         if (meeting.state == MeetingStatus.CANCELLED || meeting.state == MeetingStatus.RESERVED)
             throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
@@ -275,27 +282,14 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {
-        val meeting = getMeetingObjectById(meetingId)
+        val creator = getMeetingObjectById(meetingId).getMeetingCreator()
 
-        if (meeting.creator.username == username)
+        if (creator.username == username)
             return true
         return false
     }
 
     override fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean {
-        val meeting = getMeetingObjectById(meetingId)
-
-        if (meeting.creator.username == username) return true
-        meeting.participants.find { it.user.username == username } ?: return false
-
-        return true
+        return getMeetingObjectById(meetingId).isParticipated(username)
     }
-
-    private fun getMeetingByIdAndHandleException(meetingId: String): Meeting {
-        val meeting = meetingRepo.findById(meetingId)
-        if (meeting.isPresent)
-            return meeting.get()
-        throw EntityDoesNotExist(ErrorMessage.MEETING_DOES_NOT_EXIST)
-    }
-
 }
