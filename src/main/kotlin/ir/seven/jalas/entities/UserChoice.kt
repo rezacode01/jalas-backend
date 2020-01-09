@@ -1,6 +1,7 @@
 package ir.seven.jalas.entities
 
 import ir.seven.jalas.enums.UserChoiceState
+import net.bytebuddy.utility.RandomString
 import javax.persistence.*
 
 @Entity
@@ -12,7 +13,7 @@ class UserChoice(
             name = "id",
             nullable = false
     )
-    var id: String = "",
+    var id: String = RandomString.make(6),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

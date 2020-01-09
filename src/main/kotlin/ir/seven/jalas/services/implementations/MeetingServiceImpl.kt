@@ -140,37 +140,14 @@ class MeetingServiceImpl : MeetingService {
     }
 
     override fun voteSlot(meetingId: String, slotId: String, username: String, vote: UserChoiceState): MeetingInfo {
+        slotService.voteSlot(slotId, username, vote)
+
         val meeting = getMeetingObjectById(meetingId)
-        val slot = slotService.getSlotObjectById(slotId)
-        val user = userService.getUserObjectByUsername(username)
-
-        val meetingSlot = meeting.slots.find { it.slotId == slotId } ?:
-                throw EntityDoesNotExist(ErrorMessage.SLOT_DOES_NOT_EXIST)
-        val slotChoice = meetingSlot.usersChoices.find {
-            it.slot.slotId == slotId && it.user.userId == user.userId
-        }
-
-        if (slotChoice == null)
-            meetingSlot.usersChoices.add(
-                UserChoice(
-                        id = RandomString.make(6),
-                        user = user,
-                        slot = slot,
-                        state = vote
-                )
-        ) else {
-            slotChoice.state = vote
-        }
-
-        val savedObject = meetingRepo.save(meeting)
-
         val meetingCreator = meeting.getMeetingCreator()
 
         emailService.sendNewVoteEmail(meeting.title, username, meetingCreator.getEmail())
 
-        logger.info("User: $username vote for meeting: $meetingId")
-
-        return MeetingInfo(savedObject)
+        return MeetingInfo(meeting)
     }
 
     override fun getAvailableRooms(meetingId: String): AvailableRooms {
@@ -185,7 +162,7 @@ class MeetingServiceImpl : MeetingService {
                 return reservationClient.getAllAvailableRooms(from, to)
             } catch (exp: Exception) {
                 logger.error(exp.message)
-                throw InternalServerError("Reservation system error not responding")
+                throw InternalServerError(ErrorMessage.RESERVATION_SYSTEM_NOT_RESPONDING)
             }
         }
         throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
