@@ -49,10 +49,7 @@ class CommentServiceImpl : CommentService {
         val meeting = meetingService.getMeetingObjectById(meetingId)
         val user = userService.getUserObjectByUsername(username)
 
-        val repliedComment =
-                if (request.replyTo != null)
-                    getCommentById(request.replyTo)
-                else null
+        val repliedComment = setReplyComment(request.replyTo)
 
         val newComment = Comment(
                 user = user,
@@ -68,11 +65,30 @@ class CommentServiceImpl : CommentService {
         return CommentInfo(newComment)
     }
 
+    override fun editComment(meetingId: String, commentId: String, request: MeetingCommentRequest): CommentInfo {
+        val comment = getCommentById(commentId)
+
+        comment.message = request.message
+        comment.repliedComment = setReplyComment(request.replyTo)
+
+        val savedComment = commentRepo.save(comment)
+
+        logger.info("Edit comment: $commentId with request: $request")
+
+        return CommentInfo(savedComment)
+    }
+
     private fun getCommentById(commentId: String): Comment {
         val comment = commentRepo.findById(commentId)
 
         if (comment.isPresent)
             return comment.get()
         throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
+    }
+
+    private fun setReplyComment(repliedCommentId: String?): Comment? {
+        if (repliedCommentId != null)
+            return getCommentById(repliedCommentId)
+        return null
     }
 }

@@ -21,8 +21,8 @@ class MeetingController {
     @Autowired
     private lateinit var userService: UserService
 
-    @Autowired
-    private lateinit var commentService: CommentService
+//    @Autowired
+//    private lateinit var commentService: CommentService
 
     /**
      * Participants of meeting should be exist in current users
@@ -130,34 +130,5 @@ class MeetingController {
             @RequestParam status: MeetingStatus
     ) : MeetingInfo {
         return meetingService.changeMeetingState(meetingId, status)
-    }
-
-    @PostMapping("/{meetingId}/comments")
-    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
-    fun commentOnMeeting(
-            @AuthenticationPrincipal principal: Principal,
-            @PathVariable meetingId: String,
-            @RequestBody request: MeetingCommentRequest
-    ): CommentInfo {
-        return commentService.createComment(meetingId, principal.name, request)
-    }
-
-    @GetMapping("{meetingId}/comments")
-    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
-    fun getAllComments(
-            @AuthenticationPrincipal principal: Principal,
-            @PathVariable meetingId: String
-    ): NormalizedListFormat<CommentInfo> {
-        return commentService.getComments(meetingId).toNormalizedForm()
-    }
-
-    @DeleteMapping("{meetingId}/comments/{commentId}")
-    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
-    fun deleteCommentOnMeeting(
-            @AuthenticationPrincipal principal: Principal,
-            @PathVariable meetingId: String,
-            @PathVariable commentId: String
-    ) {
-        commentService.deleteComment(meetingId, commentId)
     }
 }
