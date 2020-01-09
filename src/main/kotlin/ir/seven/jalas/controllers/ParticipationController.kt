@@ -23,4 +23,14 @@ class ParticipationController {
     ) {
         participationService.addParticipantToMeeting(username, meetingId)
     }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isMeetingCreator(#principal.name, #meetingId)")
+    fun deleteParticipant(
+            @AuthenticationPrincipal principal: Principal,
+            @PathVariable meetingId: String,
+            @RequestParam username: String
+    ) {
+        participationService.removeParticipantFromMeeting(username, meetingId)
+    }
 }
