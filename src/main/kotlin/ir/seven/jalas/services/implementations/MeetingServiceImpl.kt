@@ -192,46 +192,6 @@ class MeetingServiceImpl : MeetingService {
         throw BadRequestException(ErrorMessage.CAN_NOT_SET_ROOM_BEFORE_SETTING_TIME)
     }
 
-    override fun createComment(meetingId: String, username: String, request: MeetingCommentRequest): CommentInfo {
-        val meeting = getMeetingObjectById(meetingId)
-        val user = userService.getUserObjectByUsername(username)
-
-        val repliedMeeting =
-                if (request.replyTo != null)
-                    meeting.comments.find { it.commentId == request.replyTo } ?:
-                        throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
-                else null
-
-        val newComment = Comment(
-                user = user,
-                meeting = meeting,
-                message = request.message,
-                repliedComment = repliedMeeting
-        )
-
-        meeting.comments.add(newComment)
-        meetingRepo.save(meeting)
-
-        logger.info("Create comment with message: ${request.message} on meeting $meetingId")
-
-        return CommentInfo(newComment)
-    }
-
-    override fun getComments(meetingId: String): List<CommentInfo> {
-        val meeting = getMeetingObjectById(meetingId)
-
-        return meeting.comments.map { comment -> CommentInfo(comment) }
-    }
-
-    override fun deleteComment(meetingId: String, commentId: String) {
-        val meeting = getMeetingObjectById(meetingId)
-
-        meeting.comments.find { it.commentId == commentId } ?: throw EntityDoesNotExist(ErrorMessage.COMMENT_DOES_NOT_EXIST)
-        meeting.comments.removeIf { it.commentId == commentId }
-
-//        meetingRepo.save(meeting)
-    }
-
     override fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo {
         val meeting = getMeetingObjectById(meetingId)
 

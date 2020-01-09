@@ -2,6 +2,7 @@ package ir.seven.jalas.controllers
 
 import ir.seven.jalas.DTO.*
 import ir.seven.jalas.enums.MeetingStatus
+import ir.seven.jalas.services.CommentService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +20,9 @@ class MeetingController {
 
     @Autowired
     private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var commentService: CommentService
 
     /**
      * Participants of meeting should be exist in current users
@@ -135,7 +139,7 @@ class MeetingController {
             @PathVariable meetingId: String,
             @RequestBody request: MeetingCommentRequest
     ): CommentInfo {
-        return meetingService.createComment(meetingId, principal.name, request)
+        return commentService.createComment(meetingId, principal.name, request)
     }
 
     @GetMapping("{meetingId}/comments")
@@ -144,7 +148,7 @@ class MeetingController {
             @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String
     ): NormalizedListFormat<CommentInfo> {
-        return meetingService.getComments(meetingId).toNormalizedForm()
+        return commentService.getComments(meetingId).toNormalizedForm()
     }
 
     @DeleteMapping("{meetingId}/comments/{commentId}")
@@ -154,6 +158,6 @@ class MeetingController {
             @PathVariable meetingId: String,
             @PathVariable commentId: String
     ) {
-        meetingService.deleteComment(meetingId, commentId)
+        commentService.deleteComment(meetingId, commentId)
     }
 }
