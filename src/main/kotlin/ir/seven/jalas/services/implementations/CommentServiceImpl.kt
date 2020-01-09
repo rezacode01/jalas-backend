@@ -33,8 +33,9 @@ class CommentServiceImpl : CommentService {
 
     override fun getComments(meetingId: String): List<CommentInfo> {
         val meeting = meetingService.getMeetingObjectById(meetingId)
+        val comments = commentRepo.findCommentsByMeeting(meeting)
 
-        return meeting.comments.map { comment -> CommentInfo(comment) }
+        return comments.map { comment -> CommentInfo(comment) }
     }
 
     override fun deleteComment(meetingId: String, commentId: String) {
@@ -63,7 +64,6 @@ class CommentServiceImpl : CommentService {
                 repliedComment = repliedMeeting
         )
 
-//        meeting.comments.add(newComment)
         commentRepo.save(newComment)
 
         logger.info("Create comment with message: ${request.message} on meeting $meetingId")
