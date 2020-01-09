@@ -78,6 +78,14 @@ class CommentServiceImpl : CommentService {
         return CommentInfo(savedComment)
     }
 
+    override fun isCommentCreator(username: String, commentId: String): Boolean {
+        val comment = getCommentById(commentId)
+
+        if (comment.user.username == username)
+            return true
+        return false
+    }
+
     private fun getCommentById(commentId: String): Comment {
         val comment = commentRepo.findById(commentId)
 

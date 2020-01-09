@@ -38,7 +38,7 @@ class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
+    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.isCommentCreator(#principal.name, #commentId)")
     fun editCommentOnMeeting(
             @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,
@@ -49,7 +49,7 @@ class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    @PreAuthorize("hasRole('ROLE_USER') and @authorizationService.hasParticipatedInMeeting(#principal.name, #meetingId)")
+    @PreAuthorize("hasRole('ROLE_USER') and (@authorizationService.isMeetingCreator(#principal.name, #meetingId) or @authorizationService.isCommentCreator(#principal.name, #commentId))")
     fun deleteCommentOnMeeting(
             @AuthenticationPrincipal principal: Principal,
             @PathVariable meetingId: String,

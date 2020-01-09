@@ -1,6 +1,7 @@
 package ir.seven.jalas.services.implementations
 
 import ir.seven.jalas.services.AuthorizationService
+import ir.seven.jalas.services.CommentService
 import ir.seven.jalas.services.MeetingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -13,6 +14,9 @@ class AuthorizationServiceImpl : AuthorizationService {
     @Autowired
     private lateinit var meetingService: MeetingService
 
+    @Autowired
+    private lateinit var commentService: CommentService
+
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {
         return meetingService.isMeetingCreator(username, meetingId)
     }
@@ -21,5 +25,7 @@ class AuthorizationServiceImpl : AuthorizationService {
         return meetingService.hasParticipatedInMeeting(username, meetingId)
     }
 
-
+    override fun isCommentCreator(username: String, commentId: String): Boolean {
+        return commentService.isCommentCreator(username, commentId)
+    }
 }

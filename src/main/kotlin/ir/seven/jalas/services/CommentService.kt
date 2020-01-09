@@ -9,4 +9,5 @@ interface CommentService {
     fun editComment(meetingId: String, commentId: String, request: MeetingCommentRequest): CommentInfo
     fun deleteComment(meetingId: String, commentId: String)
 
+    fun isCommentCreator(username: String, commentId: String): Boolean
 }
