@@ -7,7 +7,10 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "user_notification_management")
-class UserNotificationManagement(
+class UserNotificationManager(
+        /**
+         * user username
+         */
         @Id
         @Column(
                 name = "id",
