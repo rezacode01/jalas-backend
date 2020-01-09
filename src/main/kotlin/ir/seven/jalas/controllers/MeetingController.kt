@@ -1,6 +1,6 @@
 package ir.seven.jalas.controllers
 
-import ir.seven.jalas.DTO.*
+import ir.seven.jalas.dto.*
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.UserService

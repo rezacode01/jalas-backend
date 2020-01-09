@@ -1,9 +1,9 @@
 package ir.seven.jalas.clients.reservation
 
 import ir.seven.jalas.clients.reservation.configuration.ReservationConfiguration
-import ir.seven.jalas.DTO.AvailableRooms
-import ir.seven.jalas.DTO.ReserveInfo
-import ir.seven.jalas.DTO.ReserveRoomResponse
+import ir.seven.jalas.dto.AvailableRooms
+import ir.seven.jalas.dto.ReserveInfo
+import ir.seven.jalas.dto.ReserveRoomResponse
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

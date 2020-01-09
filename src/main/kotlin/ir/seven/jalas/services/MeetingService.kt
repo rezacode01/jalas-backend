@@ -1,6 +1,6 @@
 package ir.seven.jalas.services
 
-import ir.seven.jalas.DTO.*
+import ir.seven.jalas.dto.*
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.enums.UserChoiceState

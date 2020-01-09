@@ -1,7 +1,7 @@
 package ir.seven.jalas.services
 
-import ir.seven.jalas.DTO.CommentInfo
-import ir.seven.jalas.DTO.MeetingCommentRequest
+import ir.seven.jalas.dto.CommentInfo
+import ir.seven.jalas.dto.MeetingCommentRequest
 
 interface CommentService {
     fun getComments(meetingId: String): List<CommentInfo>

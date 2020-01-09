@@ -1,6 +1,6 @@
 package ir.seven.jalas.processes
 
-import ir.seven.jalas.DTO.ReserveInfo
+import ir.seven.jalas.dto.ReserveInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.EmailService

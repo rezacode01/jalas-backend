@@ -1,13 +1,12 @@
 package integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import ir.seven.jalas.DTO.CreateMeetingRequest
-import ir.seven.jalas.DTO.CreateSlotRequest
+import ir.seven.jalas.dto.CreateMeetingRequest
+import ir.seven.jalas.dto.CreateSlotRequest
 import ir.seven.jalas.JalasApplication
 import ir.seven.jalas.entities.User
 import ir.seven.jalas.repositories.UserRepo
 import net.bytebuddy.utility.RandomString
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired

@@ -5,6 +5,7 @@ import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.globals.EmailSubjects
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
+import ir.seven.jalas.services.UserNotificationManagementService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -30,127 +31,123 @@ class EmailServiceImpl : EmailService {
     private lateinit var meetingService: MeetingService
 
     @Autowired
-    var emailSender: JavaMailSender? = null
+    private lateinit var emailSender: JavaMailSender
+
+    @Autowired
+    private lateinit var userNotificationSetting: UserNotificationManagementService
 
     override fun sendMeetingReservedRoomEmail(meetingId: String) {
-        val meeting = meetingService.getMeetingObjectById(meetingId)
-
-        val receivers: MutableSet<String> = mutableSetOf()
-        receivers.add(meeting.getMeetingCreator().getEmail())
-        meeting.slots.forEach { slot ->
-            slot.usersChoices.forEach { userChoice ->
-                receivers.add(userChoice.user.username)
-            }
-        }
-
         val arguments = mapOf(
                 "id" to meetingId,
                 "baseUrl" to baseUrl
         )
         val template = render("meeting-link", arguments)
 
-        receivers.forEach {
-            this.mimeMessageSender(
-                    it,
-                    EmailSubjects.MEETING_RESERVED,
-                    template
-            )
+        val meeting = meetingService.getMeetingObjectById(meetingId)
+        meeting.participants.forEach { participant ->
+            val username = participant.user.username
+            val setting = userNotificationSetting.getOrCreateUserNotificationManagementObject(username)
+            if (setting.meetingRoomReservation) {
+                this.mimeMessageSender(username, EmailSubjects.MEETING_RESERVED, template)
+                logger.info("Send email for reserving room to $username")
+            }
         }
-
-        logger.info("Send email for reserving room")
     }
 
     @Async
     override fun sendAddSlotEmail(meetingTitle: String, email: String) {
-        val arguments = mapOf(
-                "meeting" to meetingTitle
-        )
-        val template = render("meeting-add-slot", arguments)
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).addingSlot) {
+            val arguments = mapOf("meeting" to meetingTitle)
+            val template = render("meeting-add-slot", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = EmailSubjects.MEETING_ADD_NEW_SLOT,
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.MEETING_ADD_NEW_SLOT,
+                    text = template
+            )
+        }
     }
 
     @Async
     override fun sendDeleteSlotEmail(meetingTitle: String, email: String) {
-        val arguments = mapOf(
-                "meeting" to meetingTitle
-        )
-        val template = render("meeting-delete-slot", arguments)
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).removingSlot) {
+            val arguments = mapOf("meeting" to meetingTitle)
+            val template = render("meeting-delete-slot", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = EmailSubjects.MEETING_DELETE_SLOT,
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.MEETING_DELETE_SLOT,
+                    text = template
+            )
+        }
     }
 
     @Async
     override fun sendNewParticipantEmail(meetingTitle: String, email: String) {
-        val arguments = mapOf(
-                "meeting" to meetingTitle
-        )
-        val template = render("meeting-add-participant", arguments)
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).addingParticipant) {
+            val arguments = mapOf("meeting" to meetingTitle)
+            val template = render("meeting-add-participant", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = EmailSubjects.MEETING_ADD_PARTICIPANT,
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.MEETING_ADD_PARTICIPANT,
+                    text = template
+            )
+        }
     }
 
     @Async
     override fun sendDeleteParticipantEmail(meetingTitle: String, email: String) {
-        val arguments = mapOf(
-                "meeting" to meetingTitle
-        )
-        val template = render("meeting-delete-participant", arguments)
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).removingParticipant) {
+            val arguments = mapOf("meeting" to meetingTitle)
+            val template = render("meeting-delete-participant", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = EmailSubjects.MEETING_DELETE_PARTICIPANT,
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.MEETING_DELETE_PARTICIPANT,
+                    text = template
+            )
+        }
     }
 
     @Async
     override fun sendNewVoteEmail(meetingTitle: String, username: String, email: String) {
-        val arguments = mapOf(
-                "meeting" to meetingTitle,
-                "user" to username
-        )
-        val template = render("meeting-new-vote", arguments)
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).voting) {
+            val arguments = mapOf(
+                    "meeting" to meetingTitle,
+                    "user" to username
+            )
+            val template = render("meeting-new-vote", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = EmailSubjects.MEETING_NEW_VOTE,
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.MEETING_NEW_VOTE,
+                    text = template
+            )
 
-        logger.info("Email with subject: ${EmailSubjects.MEETING_NEW_VOTE} to $email")
+            logger.info("Email with subject: ${EmailSubjects.MEETING_NEW_VOTE} to $email")
+        }
     }
 
     @Async
     override fun sendMeetingInvitationEmail(meeting: Meeting, email: String) {
-        val arguments = mapOf(
-                "id" to meeting.mid,
-                "baseUrl" to baseUrl
-        )
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).meetingInvitation) {
+            val arguments = mapOf(
+                    "id" to meeting.mid,
+                    "baseUrl" to baseUrl
+            )
+            val template = render("meeting-invitation", arguments)
 
-        val template = render("meeting-invitation", arguments)
-
-        this.mimeMessageSender(
-                to = email,
-                subject = "Your are invited to meeting ${meeting.title}",
-                text = template
-        )
+            this.mimeMessageSender(
+                    to = email,
+                    subject = "Your are invited to meeting ${meeting.title}",
+                    text = template
+            )
+        }
     }
 
     fun mimeMessageSender(to: String, subject: String, text: String) {
-        val message = emailSender!!.createMimeMessage()
+        val message = emailSender.createMimeMessage()
 
         val helper = MimeMessageHelper(message, true)
 
@@ -158,7 +155,7 @@ class EmailServiceImpl : EmailService {
         helper.setTo(to)
         helper.setText(text, text)
 
-        emailSender?.send(message)
+        emailSender.send(message)
     }
 
     private fun render(name: String, map: Map<String, Any>) =

@@ -1,4 +1,4 @@
-package ir.seven.jalas.DTO
+package ir.seven.jalas.dto
 
 import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.enums.UserChoiceState
