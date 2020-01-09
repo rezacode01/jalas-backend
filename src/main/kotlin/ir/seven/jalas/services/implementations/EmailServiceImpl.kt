@@ -137,11 +137,13 @@ class EmailServiceImpl : EmailService {
         )
         val template = render("meeting-invitation", arguments)
 
-        this.mimeMessageSender(
-                to = email,
-                subject = "Your are invited to meeting ${meeting.title}",
-                text = template
-        )
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).meetingInvitation) {
+            this.mimeMessageSender(
+                    to = email,
+                    subject = "Your are invited to meeting ${meeting.title}",
+                    text = template
+            )
+        }
     }
 
     fun mimeMessageSender(to: String, subject: String, text: String) {

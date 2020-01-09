@@ -27,6 +27,12 @@ class UserNotificationSetting(
         var meetingRoomReservation: Boolean = true,
 
         @Column(
+                name = "meeting_invitation",
+                nullable = false
+        )
+        var meetingInvitation: Boolean = true,
+
+        @Column(
                 name = "adding_slot",
                 nullable = false
         )
