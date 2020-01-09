@@ -39,7 +39,7 @@ class EmailServiceImpl : EmailService {
         val meeting = meetingService.getMeetingObjectById(meetingId)
 
         val receivers: MutableSet<String> = mutableSetOf()
-        receivers.add(meeting.creator.username)
+        receivers.add(meeting.getMeetingCreator().getEmail())
         meeting.slots.forEach { slot ->
             slot.usersChoices.forEach { userChoice ->
                 receivers.add(userChoice.user.username)

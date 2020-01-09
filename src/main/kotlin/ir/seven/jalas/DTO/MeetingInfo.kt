@@ -15,7 +15,7 @@ data class MeetingInfo(
     constructor(meeting: Meeting) : this(
             meeting.mid,
             meeting.title,
-            UserInfo(meeting.creator),
+            UserInfo(meeting.getMeetingCreator()),
             meeting.slots.map { SlotInfo.toSlotInfo(it) },
             if (meeting.slotId != null) SlotInfo.toSlotInfo(meeting.slotId!!) else null,
             meeting.roomId,

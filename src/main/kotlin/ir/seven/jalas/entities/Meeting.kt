@@ -24,10 +24,6 @@ class Meeting (
         )
         var title: String = "",
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinColumn(name = "creator")
-        var creator: User = User(),
-
         @Column(
                 name = "room_id",
                 nullable = true

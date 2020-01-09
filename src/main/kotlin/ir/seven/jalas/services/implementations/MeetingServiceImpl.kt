@@ -11,15 +11,14 @@ import ir.seven.jalas.exceptions.BadRequestException
 import ir.seven.jalas.exceptions.EntityDoesNotExist
 import ir.seven.jalas.exceptions.InternalServerError
 import ir.seven.jalas.repositories.MeetingRepo
-import ir.seven.jalas.repositories.UserRepo
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
 import ir.seven.jalas.services.UserService
 import net.bytebuddy.utility.RandomString
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.Exception
@@ -47,15 +46,22 @@ class MeetingServiceImpl : MeetingService {
     @Autowired
     private lateinit var emailService: EmailService
 
-    val logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
+    val logger: Logger = LoggerFactory.getLogger(MeetingServiceImpl::class.java)
 
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
         val user = userService.getUserObjectByUsername(username)
 
         val meeting = Meeting(
                 mid = RandomString.make(10),
-                title = request.title,
-                creator = user
+                title = request.title
+        )
+
+        meeting.participants.add(
+                Participants(
+                        user = user,
+                        meeting = meeting,
+                        role = MeetingParticipationRole.CREATOR
+                )
         )
 
         meeting.slots = request.slots.map {
@@ -173,7 +179,7 @@ class MeetingServiceImpl : MeetingService {
         if (meeting.state >= MeetingStatus.TIME_SUBMITTED && meeting.slotId != null) {
             val slot = meeting.slotId!!
 
-            val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
+            val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
             val from = SimpleDateFormat(dateFormat).format(slot.startDate)
             val to = SimpleDateFormat(dateFormat).format(slot.endDate)
             try {

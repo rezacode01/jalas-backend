@@ -20,19 +20,12 @@ class UserServiceImpl: UserService {
     @Autowired
     private lateinit var userRepo: UserRepo
 
-    @Autowired
-    private lateinit var meetingRepo: MeetingRepo
-
     override fun getAllMyMeeting(username: String): List<MeetingInfo> {
         val user = getUserObjectByUsername(username)
         val myMeeting: MutableMap<String, MeetingInfo> = mutableMapOf()
 
         user.participants.forEach {
             myMeeting[it.meeting.mid] = MeetingInfo(it.meeting)
-        }
-
-        meetingRepo.findByCreator(user).forEach { meeting ->
-            myMeeting[meeting.mid] = MeetingInfo(meeting)
         }
 
         return myMeeting.values.toList()
