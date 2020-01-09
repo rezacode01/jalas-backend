@@ -15,14 +15,13 @@ import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import ir.seven.jalas.services.SlotService
 import ir.seven.jalas.services.UserService
-import net.bytebuddy.utility.RandomString
+import ir.seven.jalas.utilities.toSimpleDateFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.Exception
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import kotlin.math.absoluteValue
@@ -51,10 +50,7 @@ class MeetingServiceImpl : MeetingService {
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
         val user = userService.getUserObjectByUsername(username)
 
-        val meeting = Meeting(
-                mid = RandomString.make(10),
-                title = request.title
-        )
+        val meeting = Meeting(title = request.title)
 
         meeting.participants.add(
                 Participants(
@@ -152,14 +148,15 @@ class MeetingServiceImpl : MeetingService {
 
     override fun getAvailableRooms(meetingId: String): AvailableRooms {
         val meeting = getMeetingObjectById(meetingId)
+
         if (meeting.state >= MeetingStatus.TIME_SUBMITTED && meeting.slotId != null) {
             val slot = meeting.slotId!!
 
-            val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            val from = SimpleDateFormat(dateFormat).format(slot.startDate)
-            val to = SimpleDateFormat(dateFormat).format(slot.endDate)
             try {
-                return reservationClient.getAllAvailableRooms(from, to)
+                return reservationClient.getAllAvailableRooms(
+                        slot.startDate.toSimpleDateFormat(),
+                        slot.endDate.toSimpleDateFormat()
+                )
             } catch (exp: Exception) {
                 logger.error(exp.message)
                 throw InternalServerError(ErrorMessage.RESERVATION_SYSTEM_NOT_RESPONDING)

@@ -3,6 +3,7 @@ package ir.seven.jalas.entities
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.exceptions.EntityDoesNotExist
+import net.bytebuddy.utility.RandomString
 import java.util.*
 import javax.persistence.*
 
@@ -16,7 +17,7 @@ class Meeting (
                 unique = true,
                 nullable = false
         )
-        var mid: String = "",
+        var mid: String = RandomString.make(10),
 
         @Column(
                 name = "title",
