@@ -1,8 +1,8 @@
 package ir.seven.jalas.services
 
-import ir.seven.jalas.entities.UserNotificationManager
+import ir.seven.jalas.entities.UserNotificationSetting
 
 
 interface UserNotificationManagementService {
-    fun getOrCreateUserNotificationManagementObject(username: String): UserNotificationManager
+    fun getOrCreateUserNotificationManagementObject(username: String): UserNotificationSetting
 }
