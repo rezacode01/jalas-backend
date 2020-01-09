@@ -1,6 +1,6 @@
 package ir.seven.jalas.services.implementations
 
-import ir.seven.jalas.DTO.*
+import ir.seven.jalas.dto.*
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.entities.*
 import ir.seven.jalas.enums.ErrorMessage

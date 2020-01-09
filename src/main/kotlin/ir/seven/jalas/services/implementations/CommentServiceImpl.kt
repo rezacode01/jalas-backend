@@ -1,7 +1,7 @@
 package ir.seven.jalas.services.implementations
 
-import ir.seven.jalas.DTO.CommentInfo
-import ir.seven.jalas.DTO.MeetingCommentRequest
+import ir.seven.jalas.dto.CommentInfo
+import ir.seven.jalas.dto.MeetingCommentRequest
 import ir.seven.jalas.entities.Comment
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.exceptions.EntityDoesNotExist

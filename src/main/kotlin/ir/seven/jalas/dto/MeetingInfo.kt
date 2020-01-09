@@ -1,4 +1,4 @@
-package ir.seven.jalas.DTO
+package ir.seven.jalas.dto
 
 import ir.seven.jalas.entities.Meeting
 import ir.seven.jalas.enums.MeetingStatus

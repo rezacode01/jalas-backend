@@ -1,6 +1,6 @@
 package ir.seven.jalas.services
 
-import ir.seven.jalas.DTO.SlotInfo
+import ir.seven.jalas.dto.SlotInfo
 import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.enums.UserChoiceState
 

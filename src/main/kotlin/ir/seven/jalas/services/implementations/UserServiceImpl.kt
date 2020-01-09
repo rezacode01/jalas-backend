@@ -1,7 +1,7 @@
 package ir.seven.jalas.services.implementations
 
-import ir.seven.jalas.DTO.MeetingInfo
-import ir.seven.jalas.DTO.UserInfo
+import ir.seven.jalas.dto.MeetingInfo
+import ir.seven.jalas.dto.UserInfo
 import ir.seven.jalas.entities.User
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.exceptions.EntityDoesNotExist

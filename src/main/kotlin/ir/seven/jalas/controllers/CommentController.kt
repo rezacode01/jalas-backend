@@ -1,9 +1,9 @@
 package ir.seven.jalas.controllers
 
-import ir.seven.jalas.DTO.CommentInfo
-import ir.seven.jalas.DTO.MeetingCommentRequest
-import ir.seven.jalas.DTO.NormalizedListFormat
-import ir.seven.jalas.DTO.toNormalizedForm
+import ir.seven.jalas.dto.CommentInfo
+import ir.seven.jalas.dto.MeetingCommentRequest
+import ir.seven.jalas.dto.NormalizedListFormat
+import ir.seven.jalas.dto.toNormalizedForm
 import ir.seven.jalas.services.CommentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
