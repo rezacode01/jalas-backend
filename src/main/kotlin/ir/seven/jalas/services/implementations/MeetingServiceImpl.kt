@@ -164,10 +164,9 @@ class MeetingServiceImpl : MeetingService {
 
         val savedObject = meetingRepo.save(meeting)
 
-        val meetingCreator = meeting.participants.find { it.role == MeetingParticipationRole.CREATOR }?.user
-                ?: throw EntityDoesNotExist(ErrorMessage.USER_DOES_NOT_EXIST)
+        val meetingCreator = meeting.getMeetingCreator()
 
-        emailService.sendNewVote(meeting.title, username, meetingCreator.getEmail())
+        emailService.sendNewVoteEmail(meeting.title, username, meetingCreator.getEmail())
 
         logger.info("User: $username vote for meeting: $meetingId")
 

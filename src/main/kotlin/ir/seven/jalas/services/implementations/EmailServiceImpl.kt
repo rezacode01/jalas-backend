@@ -2,20 +2,17 @@ package ir.seven.jalas.services.implementations
 
 import com.hubspot.jinjava.Jinjava
 import ir.seven.jalas.entities.Meeting
-import ir.seven.jalas.globals.EmailBodies
 import ir.seven.jalas.globals.EmailSubjects
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.annotation.PostConstruct
 
 @Service
 @Transactional
@@ -46,7 +43,7 @@ class EmailServiceImpl : EmailService {
             }
         }
 
-        val arguments = mapOf<String, String>(
+        val arguments = mapOf(
                 "id" to meetingId,
                 "baseUrl" to baseUrl
         )
@@ -65,7 +62,7 @@ class EmailServiceImpl : EmailService {
 
     @Async
     override fun sendAddSlotEmail(meetingTitle: String, email: String) {
-        val arguments = mapOf<String, String>(
+        val arguments = mapOf(
                 "meeting" to meetingTitle
         )
         val template = render("meeting-add-slot", arguments)
@@ -78,8 +75,8 @@ class EmailServiceImpl : EmailService {
     }
 
     @Async
-    override fun sendNewVote(meetingTitle: String, username: String, email: String) {
-        val arguments = mapOf<String, String>(
+    override fun sendNewVoteEmail(meetingTitle: String, username: String, email: String) {
+        val arguments = mapOf(
                 "meeting" to meetingTitle,
                 "user" to username
         )
@@ -94,16 +91,8 @@ class EmailServiceImpl : EmailService {
         logger.info("Email with subject: ${EmailSubjects.MEETING_NEW_VOTE} to $email")
     }
 
-    override fun sendSimpleMessage(to: String, subject: String, text: String) {
-        val message: SimpleMailMessage = SimpleMailMessage()
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        emailSender?.send(message);
-    }
-
     override fun sendMeetingInvitationEmail(meeting: Meeting, email: String) {
-        val arguments = mapOf<String, String>(
+        val arguments = mapOf(
                 "id" to meeting.mid,
                 "baseUrl" to baseUrl
         )
