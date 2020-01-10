@@ -23,6 +23,7 @@ import java.lang.Exception
 import java.util.*
 import kotlin.math.absoluteValue
 
+@Suppress("NON_EXHAUSTIVE_WHEN")
 @Service
 @Transactional
 class MeetingServiceImpl : MeetingService {
