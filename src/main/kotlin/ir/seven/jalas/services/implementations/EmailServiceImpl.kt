@@ -131,8 +131,7 @@ class EmailServiceImpl : EmailService {
 
     @Async
     override fun sendClosedPollEmail(meetingTitle: String, email: String) {
-        // todo fix notif setting
-        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).voting) {
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).closingPoll) {
             val arguments = mapOf("meeting" to meetingTitle)
             val template = render("poll-closed", arguments)
 
