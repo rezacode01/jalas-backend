@@ -42,7 +42,7 @@ class Meeting (
                 name = "state",
                 nullable = false
         )
-        var state: MeetingStatus = MeetingStatus.PENDING,
+        var state: MeetingStatus = MeetingStatus.POLL,
 
         @Column(
                 name = "changed",
