@@ -62,6 +62,12 @@ class Meeting (
         )
         var submitTime: Date? = null,
 
+        @Column(
+                name = "deadline_date",
+                nullable = true
+        )
+        var deadlineDate: Date? = null,
+
         @OneToMany(
                 mappedBy = "meeting",
                 fetch = FetchType.LAZY,
