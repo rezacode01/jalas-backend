@@ -51,6 +51,9 @@ class MeetingServiceImpl : MeetingService {
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
         val meeting = Meeting(title = request.title)
 
+        if (request.deadline != null)
+            meeting.deadlineDate = request.deadline.toDate()
+
         meeting.slots = request.slots.map {
             Slot(meeting = meeting, startDate = it.from.toDate(), endDate = it.to.toDate())
         }.toMutableList()

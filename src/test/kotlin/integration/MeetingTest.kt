@@ -42,7 +42,8 @@ class MeetingTest {
         val meetingRequest = CreateMeetingRequest(
                 "test meeting",
                 listOf("rezacode01@gmail.com"),
-                listOf(CreateSlotRequest(1576346400, 1576353600))
+                listOf(CreateSlotRequest(1576346400, 1576353600)),
+                deadline = null
         )
         val mapper = ObjectMapper()
         val content = mapper.writeValueAsString(meetingRequest)
