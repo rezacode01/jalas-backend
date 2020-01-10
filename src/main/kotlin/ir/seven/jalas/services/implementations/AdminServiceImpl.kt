@@ -21,17 +21,9 @@ class AdminServiceImpl : AdminService {
     override fun getSystemGeneralStats(): Map<String, String> {
         val response = mutableMapOf<String, String>()
 
-        val reservedRooms = meetingService.getTotalReservedRoomsCount()
-        response[RESERVED_ROOMS] = reservedRooms.toString()
-
-        val cancelledMeetings = meetingService.getTotalCancelledMeetings()
-        response[CANCELLED_MEETINGS] = cancelledMeetings.toString()
-
-        val changedMeetings = meetingService.getTotalChangedMeetings()
-        response[CHANGED_MEETINGS] = changedMeetings.toString()
-
-        val avgMeetingCreationTime = meetingService.getAverageMeetingCreationTime() / 1000
-        response[AVERAGE_RESPONSE_TIME] = "$avgMeetingCreationTime s"
+        meetingService.getAllMeetingStats().forEach { (key, value) ->
+            response[key] = value.toString()
+        }
 
         return response
     }

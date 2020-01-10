@@ -188,26 +188,22 @@ class MeetingServiceImpl : MeetingService {
         return MeetingInfo(meetingRepo.save(meeting))
     }
 
-    override fun getTotalReservedRoomsCount(): Int {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.RESERVED }.size
-    }
+    override fun getAllMeetingStats(): Map<String, Double> {
+        val stats = mutableMapOf<String, Double>()
 
-    override fun getTotalCancelledMeetings(): Int {
         val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.CANCELLED }.size
-    }
 
-    override fun getTotalChangedMeetings(): Int {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.changed }.size
-    }
+        stats[AdminServiceImpl.RESERVED_ROOMS] =
+                meetings.filter { it.state == MeetingStatus.RESERVED }.size.toDouble()
+        stats[AdminServiceImpl.CANCELLED_MEETINGS] =
+                meetings.filter { it.state == MeetingStatus.CANCELLED }.size.toDouble()
+        stats[AdminServiceImpl.CHANGED_MEETINGS] = meetings.filter { it.changed }.size.toDouble()
+        stats[AdminServiceImpl.AVERAGE_RESPONSE_TIME] =
+                meetings.filter { it.state == MeetingStatus.RESERVED }
+                        .map { it.getMeetingCreationTime() }
+                        .average().absoluteValue / 100
 
-    override fun getAverageMeetingCreationTime(): Double {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.RESERVED }.map { meeting ->
-            meeting.getMeetingCreationTime()
-        }.average().absoluteValue
+        return stats
     }
 
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {
