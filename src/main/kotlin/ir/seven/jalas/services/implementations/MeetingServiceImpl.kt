@@ -176,7 +176,7 @@ class MeetingServiceImpl : MeetingService {
 
             MeetingStatus.POLL ->
                 if (status == MeetingStatus.PENDING) {
-                    participationService.notifyMeetingIsClosed(meetingId)
+                    participationService.notifyPollIsClosed(meetingId)
                 }
         }
 

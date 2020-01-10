@@ -72,7 +72,7 @@ class ParticipationServiceImpl : ParticipationService {
         logger.info("Delete participant: $username from meeting: $meetingId")
     }
 
-    override fun notifyMeetingIsClosed(meetingId: String) {
+    override fun notifyPollIsClosed(meetingId: String) {
         val meeting = meetingService.getMeetingObjectById(meetingId)
 
         meeting.participants.forEach { participant ->
