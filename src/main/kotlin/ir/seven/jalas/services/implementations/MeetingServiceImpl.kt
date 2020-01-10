@@ -162,21 +162,26 @@ class MeetingServiceImpl : MeetingService {
     override fun changeMeetingState(meetingId: String, status: MeetingStatus) : MeetingInfo {
         val meeting = getMeetingObjectById(meetingId)
 
-        if (meeting.state == MeetingStatus.CANCELLED || meeting.state == MeetingStatus.RESERVED)
-            throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
+        when (meeting.state) {
+            MeetingStatus.CANCELLED, MeetingStatus.RESERVED ->
+                throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
 
-        if ((meeting.state == MeetingStatus.ROOM_SUBMITTED ||
-                        meeting.state == MeetingStatus.TIME_SUBMITTED) &&
-                status == MeetingStatus.PENDING)
-            meeting.changed = true
+            MeetingStatus.ROOM_SUBMITTED, MeetingStatus.TIME_SUBMITTED ->
+                if (status == MeetingStatus.PENDING)
+                    meeting.changed = true
+
+            MeetingStatus.POLL ->
+                if (status == MeetingStatus.PENDING) {
+                    participationService.notifyMeetingIsClosed(meetingId)
+                }
+        }
 
         if (status == MeetingStatus.RESERVED)
             meeting.submitTime = Date()
 
         meeting.state = status
-        val savedObject = meetingRepo.save(meeting)
 
-        return MeetingInfo(savedObject)
+        return MeetingInfo(meetingRepo.save(meeting))
     }
 
     override fun getTotalReservedRoomsCount(): Int {

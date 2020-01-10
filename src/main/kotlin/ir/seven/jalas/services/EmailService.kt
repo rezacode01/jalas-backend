@@ -13,4 +13,5 @@ interface EmailService {
     fun sendDeleteParticipantEmail(meetingTitle: String, email: String)
 
     fun sendNewVoteEmail(meetingTitle: String, username: String, email: String)
+    fun sendClosedPollEmail(meetingTitle: String, email: String)
 }
