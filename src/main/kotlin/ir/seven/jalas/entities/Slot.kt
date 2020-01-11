@@ -43,4 +43,19 @@ class Slot(
                 val disAgreeCount = this.usersChoices.filter { it.state == UserChoiceState.DISAGREE }.size
                 return agreeCount - disAgreeCount
         }
+
+        @Transient
+        fun getTotalAgreeCounts(): Int {
+                return this.usersChoices.filter { it.state == UserChoiceState.AGREE }.size
+        }
+
+        @Transient
+        fun getTotalDisAgreeCounts(): Int {
+                return this.usersChoices.filter { it.state == UserChoiceState.DISAGREE }.size
+        }
+
+        @Transient
+        fun getTotalSoSoCounts(): Int {
+                return this.usersChoices.filter { it.state == UserChoiceState.SO_SO }.size
+        }
 }

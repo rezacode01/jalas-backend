@@ -2,6 +2,7 @@ package ir.seven.jalas.dto
 
 import ir.seven.jalas.entities.Slot
 import ir.seven.jalas.enums.UserChoiceState
+import ir.seven.jalas.utilities.toSimpleDateFormat
 import java.text.SimpleDateFormat
 
 data class SlotInfo(
@@ -9,19 +10,19 @@ data class SlotInfo(
      val from: String,
      val to: String,
      val agreeCount: Int,
-     val disAgreeCount: Int
+     val disAgreeCount: Int,
+     val soSoCount: Int
 ) {
     companion object {
         fun toSlotInfo(slot: Slot): SlotInfo {
             return SlotInfo(
                     slot.slotId,
-                    SimpleDateFormat(dateFormat).format(slot.startDate),
-                    SimpleDateFormat(dateFormat).format(slot.endDate),
-                    slot.usersChoices.filter { it.state == UserChoiceState.AGREE }.size,
-                    slot.usersChoices.filter { it.state == UserChoiceState.DISAGREE }.size
+                    slot.startDate.toSimpleDateFormat(),
+                    slot.endDate.toSimpleDateFormat(),
+                    slot.getTotalAgreeCounts(),
+                    slot.getTotalDisAgreeCounts(),
+                    slot.getTotalSoSoCounts()
             )
         }
-
-        val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
     }
 }
