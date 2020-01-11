@@ -35,7 +35,7 @@ class Meeting (
         @JoinColumn(name = "slot_id")
         var slotId: Slot? = null,
 
-        @OneToMany(mappedBy = "meeting", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "meeting", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
         var slots: MutableList<Slot> = mutableListOf(),
 
         @Column(

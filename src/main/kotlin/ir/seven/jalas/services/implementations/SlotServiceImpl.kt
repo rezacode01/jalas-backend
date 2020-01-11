@@ -6,6 +6,7 @@ import ir.seven.jalas.entities.UserChoice
 import ir.seven.jalas.enums.ErrorMessage
 import ir.seven.jalas.enums.UserChoiceState
 import ir.seven.jalas.exceptions.EntityDoesNotExist
+import ir.seven.jalas.repositories.MeetingRepo
 import ir.seven.jalas.repositories.SlotRepo
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
@@ -37,7 +38,8 @@ class SlotServiceImpl : SlotService {
 
     override fun deleteSlot(meetingId: String, slotId: String) {
         val meeting = meetingService.getMeetingObjectById(meetingId)
-        val slot = getSlotObjectById(slotId)
+        val slot = meeting.slots.find { it.slotId == slotId } ?:
+                throw EntityDoesNotExist(ErrorMessage.SLOT_DOES_NOT_EXIST)
 
         val voters = slot.usersChoices.map { userChoice -> userChoice.user.username }
 
@@ -45,7 +47,7 @@ class SlotServiceImpl : SlotService {
             emailService.sendDeleteSlotEmail(meeting.title, email)
         }
 
-        slotRepo.deleteById(slotId)
+        meeting.slots.removeIf { it.slotId == slotId }
 
         logger.info("Delete slot: $slotId from meeting: $meetingId")
     }
