@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityExistsException
 
 @Service
 @Transactional
@@ -71,6 +70,14 @@ class ParticipationServiceImpl : ParticipationService {
         emailService.sendDeleteParticipantEmail(meeting.title, user.getEmail())
 
         logger.info("Delete participant: $username from meeting: $meetingId")
+    }
+
+    override fun notifyPollIsClosed(meetingId: String) {
+        val meeting = meetingService.getMeetingObjectById(meetingId)
+
+        meeting.participants.forEach { participant ->
+            emailService.sendClosedPollEmail(meeting.title, participant.user.getEmail())
+        }
     }
 
     private fun getParticipationObjectByUser(user: User, meeting: Meeting): Participants {

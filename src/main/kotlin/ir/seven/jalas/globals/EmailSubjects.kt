@@ -11,5 +11,6 @@ class EmailSubjects {
         const val MEETING_DELETE_PARTICIPANT = "You are removed from meeting"
 
         const val MEETING_NEW_VOTE = "A new vote committed to meeting"
+        const val POLL_CLOSED = "A poll is closed"
     }
 }

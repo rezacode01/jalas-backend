@@ -17,10 +17,7 @@ interface MeetingService {
     fun chooseRoom(meetingId: String, roomId: Int): MeetingInfo
     fun changeMeetingState(meetingId: String, status: MeetingStatus): MeetingInfo
 
-    fun getTotalReservedRoomsCount(): Int
-    fun getTotalCancelledMeetings(): Int
-    fun getTotalChangedMeetings(): Int
-    fun getAverageMeetingCreationTime(): Double
+    fun getAllMeetingStats(): Map<String, Double>
 
     fun isMeetingCreator(username: String, meetingId: String): Boolean
     fun hasParticipatedInMeeting(username: String, meetingId: String): Boolean

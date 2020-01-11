@@ -6,4 +6,6 @@ interface ParticipationService {
     fun addParticipantsToMeeting(meeting: Meeting, participants: List<String>)
     fun addParticipantToMeeting(username: String, meetingId: String)
     fun removeParticipantFromMeeting(username: String, meetingId: String)
+
+    fun notifyPollIsClosed(meetingId: String)
 }

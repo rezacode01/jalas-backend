@@ -130,6 +130,22 @@ class EmailServiceImpl : EmailService {
     }
 
     @Async
+    override fun sendClosedPollEmail(meetingTitle: String, email: String) {
+        if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).closingPoll) {
+            val arguments = mapOf("meeting" to meetingTitle)
+            val template = render("poll-closed", arguments)
+
+            this.mimeMessageSender(
+                    to = email,
+                    subject = EmailSubjects.POLL_CLOSED,
+                    text = template
+            )
+
+            logger.info("Email for closing poll: $meetingTitle to user: $email")
+        }
+    }
+
+    @Async
     override fun sendMeetingInvitationEmail(meeting: Meeting, email: String) {
         if (userNotificationSetting.getOrCreateUserNotificationManagementObject(email).meetingInvitation) {
             val arguments = mapOf(

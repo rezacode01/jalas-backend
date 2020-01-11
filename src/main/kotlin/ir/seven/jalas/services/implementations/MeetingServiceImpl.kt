@@ -23,6 +23,7 @@ import java.lang.Exception
 import java.util.*
 import kotlin.math.absoluteValue
 
+@Suppress("NON_EXHAUSTIVE_WHEN")
 @Service
 @Transactional
 class MeetingServiceImpl : MeetingService {
@@ -49,6 +50,9 @@ class MeetingServiceImpl : MeetingService {
 
     override fun createMeeting(username: String, request: CreateMeetingRequest): MeetingInfo {
         val meeting = Meeting(title = request.title)
+
+        if (request.deadline != null)
+            meeting.deadlineDate = request.deadline.toDate()
 
         meeting.slots = request.slots.map {
             Slot(meeting = meeting, startDate = it.from.toDate(), endDate = it.to.toDate())
@@ -162,43 +166,44 @@ class MeetingServiceImpl : MeetingService {
     override fun changeMeetingState(meetingId: String, status: MeetingStatus) : MeetingInfo {
         val meeting = getMeetingObjectById(meetingId)
 
-        if (meeting.state == MeetingStatus.CANCELLED || meeting.state == MeetingStatus.RESERVED)
-            throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
+        when (meeting.state) {
+            MeetingStatus.CANCELLED, MeetingStatus.RESERVED ->
+                throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
 
-        if ((meeting.state == MeetingStatus.ROOM_SUBMITTED ||
-                        meeting.state == MeetingStatus.TIME_SUBMITTED) &&
-                status == MeetingStatus.PENDING)
-            meeting.changed = true
+            MeetingStatus.ROOM_SUBMITTED, MeetingStatus.TIME_SUBMITTED ->
+                if (status == MeetingStatus.PENDING)
+                    meeting.changed = true
+
+            MeetingStatus.POLL ->
+                if (status == MeetingStatus.PENDING) {
+                    participationService.notifyPollIsClosed(meetingId)
+                }
+        }
 
         if (status == MeetingStatus.RESERVED)
             meeting.submitTime = Date()
 
         meeting.state = status
-        val savedObject = meetingRepo.save(meeting)
 
-        return MeetingInfo(savedObject)
+        return MeetingInfo(meetingRepo.save(meeting))
     }
 
-    override fun getTotalReservedRoomsCount(): Int {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.RESERVED }.size
-    }
+    override fun getAllMeetingStats(): Map<String, Double> {
+        val stats = mutableMapOf<String, Double>()
 
-    override fun getTotalCancelledMeetings(): Int {
         val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.CANCELLED }.size
-    }
 
-    override fun getTotalChangedMeetings(): Int {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.changed }.size
-    }
+        stats[AdminServiceImpl.RESERVED_ROOMS] =
+                meetings.filter { it.state == MeetingStatus.RESERVED }.size.toDouble()
+        stats[AdminServiceImpl.CANCELLED_MEETINGS] =
+                meetings.filter { it.state == MeetingStatus.CANCELLED }.size.toDouble()
+        stats[AdminServiceImpl.CHANGED_MEETINGS] = meetings.filter { it.changed }.size.toDouble()
+        stats[AdminServiceImpl.AVERAGE_RESPONSE_TIME] =
+                meetings.filter { it.state == MeetingStatus.RESERVED }
+                        .map { it.getMeetingCreationTime() }
+                        .average().absoluteValue / 100
 
-    override fun getAverageMeetingCreationTime(): Double {
-        val meetings = meetingRepo.findAll()
-        return meetings.filter { it.state == MeetingStatus.RESERVED }.map { meeting ->
-            meeting.getMeetingCreationTime()
-        }.average().absoluteValue
+        return stats
     }
 
     override fun isMeetingCreator(username: String, meetingId: String): Boolean {

@@ -57,6 +57,12 @@ class UserNotificationSetting(
         var removingParticipant: Boolean = true,
 
         @Column(
+                name = "closing_poll",
+                nullable = false
+        )
+        var closingPoll: Boolean = true,
+
+        @Column(
                 name = "vote",
                 nullable = false
         )

@@ -35,14 +35,14 @@ class Meeting (
         @JoinColumn(name = "slot_id")
         var slotId: Slot? = null,
 
-        @OneToMany(mappedBy = "meeting", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "meeting", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
         var slots: MutableList<Slot> = mutableListOf(),
 
         @Column(
                 name = "state",
                 nullable = false
         )
-        var state: MeetingStatus = MeetingStatus.PENDING,
+        var state: MeetingStatus = MeetingStatus.POLL,
 
         @Column(
                 name = "changed",
@@ -61,6 +61,12 @@ class Meeting (
                 nullable = true
         )
         var submitTime: Date? = null,
+
+        @Column(
+                name = "deadline_date",
+                nullable = true
+        )
+        var deadlineDate: Date? = null,
 
         @OneToMany(
                 mappedBy = "meeting",

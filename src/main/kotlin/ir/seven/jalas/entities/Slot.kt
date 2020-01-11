@@ -1,5 +1,6 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.UserChoiceState
 import net.bytebuddy.utility.RandomString
 import org.hibernate.annotations.LazyCollection
 import org.hibernate.annotations.LazyCollectionOption
@@ -35,4 +36,11 @@ class Slot(
         @OneToMany(mappedBy = "slot", cascade = [CascadeType.ALL])
         @LazyCollection(LazyCollectionOption.FALSE)
         var usersChoices: MutableList<UserChoice> = mutableListOf()
-)
+) {
+        @Transient
+        fun getTotalChoices(): Int {
+                val agreeCount = this.usersChoices.filter { it.state == UserChoiceState.AGREE }.size
+                val disAgreeCount = this.usersChoices.filter { it.state == UserChoiceState.DISAGREE }.size
+                return agreeCount - disAgreeCount
+        }
+}
