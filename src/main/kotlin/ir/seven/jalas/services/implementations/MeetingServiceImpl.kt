@@ -167,7 +167,7 @@ class MeetingServiceImpl : MeetingService {
         val meeting = getMeetingObjectById(meetingId)
 
         when (meeting.state) {
-            MeetingStatus.CANCELLED, MeetingStatus.RESERVED ->
+            MeetingStatus.CANCELLED ->
                 throw BadRequestException(ErrorMessage.THIS_MEETING_IS_CANCELLED)
 
             MeetingStatus.ROOM_SUBMITTED, MeetingStatus.TIME_SUBMITTED ->
