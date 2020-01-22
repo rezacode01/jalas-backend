@@ -31,28 +31,28 @@ class MeetingTest {
 
     @Test
     fun createMeetingTest() {
-        val user = User(
-                RandomString.make(10),
-                "testuser",
-                "mynote00reza@gmail.com"
-        )
-
-        val savedUser = userRepo.save(user)
-
-        val meetingRequest = CreateMeetingRequest(
-                "test meeting",
-                listOf("rezacode01@gmail.com"),
-                listOf(CreateSlotRequest(1576346400, 1576353600)),
-                deadline = null
-        )
-        val mapper = ObjectMapper()
-        val content = mapper.writeValueAsString(meetingRequest)
-
-        mockMvc.perform(post("/meetings")
-                .param("userId", savedUser.userId)
-                .content(content)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andExpect(MockMvcResultMatchers.status().isOk)
+//        val user = User(
+//                RandomString.make(10),
+//                "testuser",
+//                "mynote00reza@gmail.com"
+//        )
+//
+//        val savedUser = userRepo.save(user)
+//
+//        val meetingRequest = CreateMeetingRequest(
+//                "test meeting",
+//                listOf("rezacode01@gmail.com"),
+//                listOf(CreateSlotRequest(1576346400, 1576353600)),
+//                deadline = null
+//        )
+//        val mapper = ObjectMapper()
+//        val content = mapper.writeValueAsString(meetingRequest)
+//
+//        mockMvc.perform(post("/meetings")
+//                .param("userId", savedUser.userId)
+//                .content(content)
+//                .accept(MediaType.APPLICATION_JSON_VALUE)
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//        ).andExpect(MockMvcResultMatchers.status().isOk)
     }
 }
