@@ -1,14 +1,14 @@
 package ir.seven.jalas.processes
 
-import ir.seven.jalas.DTO.ReserveInfo
+import ir.seven.jalas.dto.ReserveInfo
 import ir.seven.jalas.clients.reservation.ReservationClient
 import ir.seven.jalas.enums.MeetingStatus
 import ir.seven.jalas.services.EmailService
 import ir.seven.jalas.services.MeetingService
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -25,7 +25,7 @@ class CheckRoomReservation {
     @Autowired
     private lateinit var emailService: EmailService
 
-    val logger = LoggerFactory.getLogger(CheckRoomReservation::class.java)
+    val logger: Logger = LoggerFactory.getLogger(CheckRoomReservation::class.java)
 
     // delay is set to 5s due to test -- Of course it's not feasible in production!
     @Scheduled(fixedDelay = 60000)
@@ -36,17 +36,17 @@ class CheckRoomReservation {
         meetingService.getAllMeetings().forEach { meeting ->
             if (meeting.state == MeetingStatus.ROOM_SUBMITTED) {
                 try {
-                    val response = reservationClient.reserveRoom(
-                            roomId = meeting.room ?: return@forEach,
-                            reserveInfo = ReserveInfo(
-                                    meeting.creator.fullname,
-                                    meeting.selectedSlot?.from ?: return@forEach,
-                                    meeting.selectedSlot?.to ?: return@forEach
-                            )
+                    reservationClient.reserveRoom(
+                        roomId = meeting.room ?: return@forEach,
+                        reserveInfo = ReserveInfo(
+                                meeting.creator.fullname,
+                                meeting.selectedSlot?.from ?: return@forEach,
+                                meeting.selectedSlot.to
                         )
+                    )
 
                     // also we can check response status code
-                    meetingService.changeMeetingStats(meeting.id, MeetingStatus.RESERVED)
+                    meetingService.changeMeetingState(meeting.id, MeetingStatus.RESERVED)
                     emailService.sendMeetingReservedRoomEmail(meeting.id)
 
                     logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
@@ -54,7 +54,7 @@ class CheckRoomReservation {
                     if (exp.message?.contains("400") == true) {
                         logger.error("There is no empty room")
 
-                        meetingService.changeMeetingStats(meeting.id, MeetingStatus.PENDING)
+                        meetingService.changeMeetingState(meeting.id, MeetingStatus.PENDING)
                     }
                     logger.error("-> Failed to reserve room ${meeting.room} for meeting ${meeting.id}")
                 }

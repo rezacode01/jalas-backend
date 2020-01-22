@@ -1,5 +1,7 @@
 package ir.seven.jalas.entities
 
+import ir.seven.jalas.enums.UserRole
+import net.bytebuddy.utility.RandomString
 import javax.persistence.*
 import javax.validation.constraints.Email
 
@@ -13,7 +15,7 @@ class User (
             name = "user_id",
             nullable = false
     )
-    var userId: String = "",
+    var userId: String = RandomString.make(6),
 
     @Column(
             name = "fullname",
@@ -24,7 +26,8 @@ class User (
     @Email
     @Column(
             name = "username",
-            nullable = false
+            nullable = false,
+            unique = true
     )
     var username: String = "",
 
@@ -34,7 +37,33 @@ class User (
     )
     val password: String = "",
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    var choices: MutableList<UserChoice> = mutableListOf()
+    @Column(
+            name = "role",
+            nullable = false
+    )
+    val role: UserRole = UserRole.USER,
 
-)
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
+    )
+    var choices: MutableList<UserChoice> = mutableListOf(),
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
+    )
+    var participants: MutableList<Participants> = mutableListOf(),
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = [CascadeType.ALL]
+    )
+    var comments: MutableList<Comment> = mutableListOf()
+) {
+    @Transient
+    fun getEmail(): String = this.username
+}

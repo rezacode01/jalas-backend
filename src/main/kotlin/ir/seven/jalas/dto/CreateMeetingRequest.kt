@@ -1,7 +1,8 @@
-package ir.seven.jalas.DTO
+package ir.seven.jalas.dto
 
 data class CreateMeetingRequest(
         val title: String,
         val participants: List<String>,
-        val slots: List<CreateSlotRequest>
+        val slots: List<CreateSlotRequest>,
+        val deadline: Long?
 )

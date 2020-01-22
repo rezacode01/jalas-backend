@@ -37,8 +37,7 @@ class MeetingDataJpaTest {
 
         val meeting = Meeting(
                 mid = "qwerty",
-                title = "title",
-                creator = user
+                title = "title"
         )
 
         meetingRepository.save(meeting)

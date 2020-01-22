@@ -1,8 +1,7 @@
-package ir.seven.jalas.DTO
+package ir.seven.jalas.dto
 
 import ir.seven.jalas.enums.UserChoiceState
 
 data class VoteMeetingRequest(
-     val username: String,
      val vote: UserChoiceState
 )

@@ -1,0 +1,2 @@
+ALTER TABLE meetings
+    ADD COLUMN changed BOOLEAN DEFAULT FALSE;

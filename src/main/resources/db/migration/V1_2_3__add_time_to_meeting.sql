@@ -1,0 +1,3 @@
+ALTER TABLE meetings
+    ADD COLUMN creation_time   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN submit_time      TIMESTAMP   NULL;

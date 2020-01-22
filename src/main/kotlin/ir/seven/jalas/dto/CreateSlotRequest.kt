@@ -1,4 +1,4 @@
-package ir.seven.jalas.DTO
+package ir.seven.jalas.dto
 
 data class CreateSlotRequest(
         val from: Long,
