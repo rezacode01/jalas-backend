@@ -28,22 +28,18 @@ class EmailServiceImpl : EmailService {
     private val cachedTemplates = mutableMapOf<String, String>()
 
     @Autowired
-    private lateinit var meetingService: MeetingService
-
-    @Autowired
     private lateinit var emailSender: JavaMailSender
 
     @Autowired
     private lateinit var userNotificationSetting: UserNotificationManagementService
 
-    override fun sendMeetingReservedRoomEmail(meetingId: String) {
+    override fun sendMeetingReservedRoomEmail(meeting: Meeting) {
         val arguments = mapOf(
-                "id" to meetingId,
+                "id" to meeting.mid,
                 "baseUrl" to baseUrl
         )
         val template = render("meeting-link", arguments)
 
-        val meeting = meetingService.getMeetingObjectById(meetingId)
         meeting.participants.forEach { participant ->
             val username = participant.user.username
             val setting = userNotificationSetting.getOrCreateUserNotificationManagementObject(username)

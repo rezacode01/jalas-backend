@@ -47,7 +47,7 @@ class CheckRoomReservation {
 
                     // also we can check response status code
                     meetingService.changeMeetingState(meeting.id, MeetingStatus.RESERVED)
-                    emailService.sendMeetingReservedRoomEmail(meeting.id)
+                    emailService.sendMeetingReservedRoomEmail(meetingService.getMeetingObjectById(meeting.id))
 
                     logger.info("-> Reserve room ${meeting.room} for meeting ${meeting.id}")
                 } catch (exp: Exception) {
